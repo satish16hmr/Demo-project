@@ -1,4 +1,21 @@
+Hello @Harshil Bodara Sir,
 
+Here are the latest updates for SocialApp as of May 28,2025:-
+
+List of Completed Tasks:-
+        1) I have created Forgot-password and reset-Password APIS for user.[Done]
+        2) Created the following User APIS with authentication:- [Done]
+                - Created a profile API for Fetch user profile with auth.
+                - Get user by id.
+                - user can update their profile.
+                - user can delete their profile
+        3) Created Follow System functionality with the following APIS:-  [Done]
+                - user can follow another user.
+                - user can unfollow another user.
+                - get user followers list.
+                - get user following list.
+
+Thanks!
 
 
 

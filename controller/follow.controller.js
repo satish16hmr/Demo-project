@@ -50,22 +50,34 @@ module.exports.unfollowUser = async (req, res) => {
     }
 };
 
-module.exports.getallFollowers = async (req, res) => {
-    const userId = req.user.id;
 
+module.exports.getFollowers = async (req, res) => {
+    const userId = parseInt(req.params.id);
     try {
         const followers = await Follower.findAll({
             where: { following_id: userId },
-            include: [{ model: User, as: 'follower' }]
+            include: [{ model: User, as: 'Follower', attributes: ['id', 'name', 'email'] }]
         });
-
-        if (followers.length === 0) {
-            return res.status(404).json({ message: 'No followers found.' });
-        }
-
-        res.status(200).json(followers);
+        res.status(200).json({ followers });
     } catch (err) {
-        res.status(500).json({ message: 'Server error.' });
+        res.status(500).json({
+            message: 'Server error while fetching followers.',
+            error: err.message
+        });
     }
-}
+};
 
+
+module.exports.getFollowing = async (req, res) => {
+    console.log(`Fetching following for user ID: ${req.params.id}`);
+  const userId = parseInt(req.params.id);
+  try {
+    const following = await Follower.findAll({
+      where: { follower_id: userId },
+      include: [{ model: User, as: 'Following', attributes: ['id', 'name', 'email'] }]
+    });
+    res.status(200).json({ following });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.' });
+  }
+};

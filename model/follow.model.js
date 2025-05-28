@@ -29,4 +29,5 @@ const Follower = sequelize.define('followers', {
     tableName: 'followers'
   });
 
+
 module.exports = Follower;

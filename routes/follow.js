@@ -10,9 +10,9 @@ router.post('/:id/follow', authMiddleware.authentication, followController.follo
 
 router.post('/:id/unfollow', authMiddleware.authentication, followController.unfollowUser);
 
-router.get('/followers', authMiddleware.authentication, followController.getallFollowers);
+router.get('/:id/followers' ,followController.getFollowers);
 
-
+router.get('/:id/followings', followController.getFollowing);
 
 
 module.exports = router;

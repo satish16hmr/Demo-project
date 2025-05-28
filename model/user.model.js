@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const bcrypt = require('bcrypt');
-const Follower = require('./follow.model');
 
 const User = sequelize.define('User',
   {
@@ -37,8 +36,6 @@ const User = sequelize.define('User',
 }
 );
 
-User.hasMany(Follower, { foreignKey: 'follower_id', as: 'Followings' });
-User.hasMany(Follower, { foreignKey: 'following_id', as: 'Followers' });
 
 User.prototype.validatePassword = async function (password) {
   return bcrypt.compare(password, this.password);

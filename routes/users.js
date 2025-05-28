@@ -27,13 +27,13 @@ router.get('/profile', authMiddleware.authentication, userController.getProfile)
 
 router.post('/logout', userController.logout);
 
-router.post('/forgot-password', authMiddleware.forgotPassword);
-
-router.post('/reset-password', authMiddleware.resetPassword);
-
 router.get('/profile/:id', authMiddleware.authentication, userController.getuserById);
 
 router.put('/profile/:id', authMiddleware.authentication, userController.updateProfile);
+
+router.post('/forgot-password', authMiddleware.forgotPassword);
+
+router.post('/reset-password', authMiddleware.resetPassword);
 
 router.delete('/delete/:id', authMiddleware.authentication, userController.deleteuser);
 
