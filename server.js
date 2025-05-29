@@ -1,9 +1,9 @@
 const express = require('express');
-const sequelize = require('./db');
-const userRoutes = require('./routes/users');
-const followRoutes = require('./routes/follow');
-const User = require('./model/user.model');
-const Follower = require('./model/follow.model');
+const sequelize = require('./config/db');
+const userRoutes = require('./routes/users.route');
+const followRoutes = require('./routes/follow.route');
+const postRoutes = require('./routes/post.route');
+const models = require('./model');
 
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
@@ -13,23 +13,19 @@ const port = process.env.PORT || 3000;
 
 app.use(cookieParser());
 app.use(express.json());
+app.set("view engine", "ejs");
 
 app.use('/users', userRoutes);
 app.use('/follow', followRoutes);
+app.use('/post', postRoutes);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running!');
 });
 
-// app.get('/test', (req, res) => {
-//   res.json({ message: 'Server is working' });
-// });
-
-User.hasMany(Follower, { foreignKey: 'following_id', as: 'Followers' });
-User.hasMany(Follower, { foreignKey: 'follower_id', as: 'Followings' });
-
-Follower.belongsTo(User, { foreignKey: 'follower_id', as: 'Follower' });
-Follower.belongsTo(User, { foreignKey: 'following_id', as: 'Following' });
+// app.get('/forgot-password', (req, res) => {
+//   res.render('forgot-password');
+// });  // forgot password page for checking
 
 sequelize.authenticate()
   .then(() => {

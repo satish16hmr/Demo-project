@@ -31,9 +31,10 @@ router.get('/profile/:id', authMiddleware.authentication, userController.getuser
 
 router.put('/profile/:id', authMiddleware.authentication, userController.updateProfile);
 
-router.post('/forgot-password', authMiddleware.forgotPassword);
 
-router.post('/reset-password', authMiddleware.resetPassword);
+router.post('/forgot-password', userController.forgotPassword);
+
+router.post('/reset-password', userController.resetPassword);
 
 router.delete('/delete/:id', authMiddleware.authentication, userController.deleteuser);
 

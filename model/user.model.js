@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const sequelize = require('../config/db');
 const bcrypt = require('bcrypt');
 
 const User = sequelize.define('User',
@@ -22,23 +22,25 @@ const User = sequelize.define('User',
       allowNull: false,
       validate: { len: [8] },
     },
-
     resetPasswordToken: {
       type: DataTypes.STRING,
     },
-
     resetPasswordExpires: {
       type: DataTypes.DATE,
     },
-
   }, {
-  timestamps: true,
-}
+    timestamps: true,
+  }
 );
-
 
 User.prototype.validatePassword = async function (password) {
   return bcrypt.compare(password, this.password);
+};
+
+// Association method
+User.associate = (models) => {
+  User.hasMany(models.Follower, { foreignKey: 'following_id', as: 'Followers' });
+  User.hasMany(models.Follower, { foreignKey: 'follower_id', as: 'Followings' });
 };
 
 module.exports = User;
