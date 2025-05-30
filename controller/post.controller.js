@@ -137,3 +137,37 @@ exports.getUserLoginFeed = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+
+// exports.getalllikesofthepost = async (req, res) => {
+//     const postId = req.params.id;
+
+//     try {
+//         const post = await Post.findByPk(postId, {
+//             include: [{
+//                 model: User,
+//                 as: 'user',
+//                 attributes: ['id', 'name', 'lastname']
+//             }]
+//         });
+
+//         if (!post) {
+//             return res.status(404).json({ message: 'Post not found' });
+//         }
+
+//         const likes = await post.getLikes({
+//             include: [{
+//                 model: User,
+//                 as: 'user',
+//                 attributes: ['id', 'name', 'lastname']
+//             }]
+//         });
+
+//         res.status(200).json({ post, likes });
+//     }
+//     catch (error) {
+//         console.error('Error fetching likes:', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// }

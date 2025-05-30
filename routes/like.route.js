@@ -5,9 +5,10 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 console.log('like routes loaded');
 
-router.post('/like-comment', authMiddleware.authentication, likeController.likeAndCommentPost);
+router.post('/posts/:id/like', authMiddleware.authentication, likeController.likePost);
 
-router.post('/alllikes', authMiddleware.authentication, likeController.alllikes);
+router.delete('/posts/:id/like', authMiddleware.authentication, likeController.unlikePost);
 
+router.get('/likes', authMiddleware.authentication, likeController.likes);
 
 module.exports = router;

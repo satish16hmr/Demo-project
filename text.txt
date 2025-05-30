@@ -1,17 +1,4 @@
-Hello 
-@Harshil Bodara Sir,
-Here are the latest updates for Social-App as of May 30,2025:-
 
-List of Completed Tasks:-
-      
-      1) Updated the API structure and made necessary improvements in the Social-App.[Done]
-      2) I have Completed getlogginuserfeed API.[Done]
-      3)
-
-    List of In-Progress Tasks:-
-    
-
-Thanks!
 
 
 

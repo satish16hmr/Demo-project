@@ -4,6 +4,7 @@ const userRoutes = require('./routes/users.route');
 const followRoutes = require('./routes/follow.route');
 const postRoutes = require('./routes/post.route');
 const likeRoutes = require('./routes/like.route');
+const commentRoutes = require('./routes/comment.route'); 
 const models = require('./model');
 
 require('dotenv').config();
@@ -21,6 +22,7 @@ app.use('/users', userRoutes);
 app.use('/follow', followRoutes);
 app.use('/post', postRoutes);
 app.use('/like', likeRoutes);
+app.use('/comment', commentRoutes);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running!');

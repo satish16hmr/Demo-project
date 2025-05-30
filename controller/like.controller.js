@@ -1,10 +1,9 @@
 const Like = require('../model/like.model');
 const Post = require('../model/post.model');
-const Comment = require('../model/comment.model');
 
-exports.likeAndCommentPost = async (req, res) => {
+exports.likePost = async (req, res) => {
     const userId = req.user.id;
-    const { postId, comment } = req.body; 
+    const postId = req.params.id;
 
     try {
         const post = await Post.findByPk(postId);
@@ -15,35 +14,39 @@ exports.likeAndCommentPost = async (req, res) => {
         let like = await Like.findOne({ where: { userId, postId } });
         if (!like) {
             like = await Like.create({ userId, postId });
-            post.likes += 1;
-            await post.save();
-        }
-
-        let newComment = null;
-        if (comment && comment.trim() !== '') {
-            newComment = await Comment.create({
-                userId,
-                postId,
-                text: comment
-            });
-            post.comments += 1;
-            await post.save();
         }
 
         res.status(201).json({
-            message: 'Like/commented Successfully',
-            like,
-            comment: newComment
+            message: 'Post liked successfully',
+            like
         });
     } catch (error) {
-        console.error('Error liking/commenting post:', error);
+        console.error('Error liking post:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
 
-exports.alllikes = async (req, res) => {
+exports.unlikePost = async (req, res) => {
+    const userId = req.user.id;
+    const postId = req.params.id;
+
     try {
-        // console.log('Fetching all likes...', req.user.id);
+        const like = await Like.findOne({ where: { userId, postId } });
+        if (!like) {
+            return res.status(404).json({ message: 'Like not found' });
+        }
+
+        await like.destroy();
+
+        res.status(200).json({ message: 'Post unliked successfully' });
+    } catch (error) {
+        console.error('Error unliking post:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.likes = async (req, res) => {
+    try {
         const likes = await Like.findAll({
             include: [
                 {
@@ -59,5 +62,4 @@ exports.alllikes = async (req, res) => {
         console.error('Error fetching likes:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
-}
-
+};
