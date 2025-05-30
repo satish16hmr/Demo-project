@@ -1,12 +1,14 @@
 const User = require('../model/user.model');
 const Post = require('../model/post.model');
+const Friend = require('../model/follow.model');
 // const { Op } = require('sequelize');
 
 
 exports.createPost = async (req, res) => {
     const { title, description, likes, comments } = req.body;
     const author = req.user.id;
-    const image = req.file ? req.file.path : null; // Cloudinary URL
+    const image = req.file ? req.file.path : null;
+    console.log(image);
 
     try {
         const newPost = await Post.create({
@@ -25,6 +27,8 @@ exports.createPost = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
 
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
@@ -51,6 +55,85 @@ exports.updatePost = async (req, res) => {
     }
     catch (error) {
         console.error('Error updating post:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
+
+exports.deletePost = async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findByPk(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        await post.destroy();
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
+
+exports.getAllPosts = async (req, res) => {
+    try {
+        const posts = await Post.findAll({
+            include: [{
+                model: User,
+                as: 'user',
+                attributes: ['id', 'name', 'lastname']
+            }],
+            order: [['created_at', 'DESC']]
+        });
+
+        res.status(200).json(posts);
+    }
+    catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
+// this api getting all the post from their friends and themselves
+
+exports.getUserLoginFeed = async (req, res) => {
+    const userId = req.user.id;
+    console.log('User ID:', userId);
+
+    try {
+        const followings = await Friend.findAll({
+            where: { follower_id: userId },
+            attributes: ['following_id']
+        });
+
+        const followingIds = followings.map(f => f.following_id);
+
+        followingIds.push(userId);
+
+        console.log('Feed will include posts from user IDs:', followingIds);
+
+        const posts = await Post.findAll({
+            where: { author: followingIds },
+            include: [{
+                model: User,
+                as: 'user',
+                attributes: ['id', 'name', 'lastname']
+            }],
+            order: [['created_at', 'DESC']]
+        });
+
+        res.status(200).json(posts);
+    }
+    catch (error) {
+        console.error('Error fetching user feed:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 }

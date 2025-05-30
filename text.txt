@@ -1,12 +1,53 @@
 Hello 
 @Harshil Bodara Sir,
-Here are the latest updates for Social-App as of May 29,2025:-
+Here are the latest updates for Social-App as of May 30,2025:-
 
 List of Completed Tasks:-
-        1) Created the API for users to create posts.[Done]
-        2) Updated the API structure and made necessary improvements in the Social-App.[Done]
-        3) Integrated file upload functionality using Cloudinary.[Done]
-        4) Developed the post update API to allow users to edit existing posts. [Done]
-        
+      
+      1) Updated the API structure and made necessary improvements in the Social-App.[Done]
+      2) I have Completed getlogginuserfeed API.[Done]
+      3)
+
+    List of In-Progress Tasks:-
+    
 
 Thanks!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
