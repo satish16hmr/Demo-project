@@ -1,83 +1,297 @@
-## API Endpoints
-
-### Auth & User
-
-| Method | Endpoint                  | Description                        | Auth Required | Body/Form Data                                  |
-|--------|---------------------------|------------------------------------|---------------|-------------------------------------------------|
-| POST   | /users/signup             | Register a new user                | No            | `name`, `lastname`, `email`, `password`, `passwordConfirm` |
-| POST   | /users/login              | Login and get JWT token            | No            | `email`, `password`                             |
-| GET    | /users/profile            | Get logged-in user's profile       | Yes           | -                                               |
-| GET    | /users/profile/:id        | Get user profile by ID             | Yes           | -                                               |
-| PUT    | /users/profile/:id        | Update user profile                | Yes           | `name`, `lastname`, `email`                     |
-| POST   | /users/logout             | Logout user                        | No            | -                                               |
-| DELETE | /users/delete/:id         | Delete user by ID                  | Yes           | -                                               |
-| POST   | /users/forgot-password    | Request password reset link        | No            | `email`                                         |
-| POST   | /users/reset-password     | Reset password with token          | No            | `token`, `password`                             |
-
-### Follow
-
-| Method | Endpoint                        | Description                        | Auth Required | Body/Form Data |
-|--------|---------------------------------|------------------------------------|---------------|---------------|
-| POST   | /follow/:id/follow              | Follow a user                      | Yes           | -             |
-| POST   | /follow/:id/unfollow            | Unfollow a user                    | Yes           | -             |
-| GET    | /follow/:id/followers           | Get followers of a user            | No            | -             |
-| GET    | /follow/:id/followings          | Get users followed by a user       | No            | -             |
-
-### Post
-
-| Method | Endpoint                        | Description                                 | Auth Required | Body/Form Data                                      |
-|--------|---------------------------------|---------------------------------------------|---------------|-----------------------------------------------------|
-| POST   | /post/Create-Post               | Create a new post (with optional image)     | Yes           | `title`, `description`, `likes`, `comments`, `image` (file) |
-| PUT    | /post/update/:id                | Update an existing post by ID               | Yes           | `title`, `description`, `likes`, `comments`, `image` (file) |
-| DELETE | /post/delete/:id                | Delete a post by ID                         | Yes           | -                                                   |
-| GET    | /post/getAllPosts               | Get all posts (with author info)            | Yes           | -                                                   |
-| GET    | /post/getUserLoginFeed          | Get posts from user and their followings    | Yes           | -                                                   |
-
-### Like & Comment
-
-| Method | Endpoint                        | Description                                 | Auth Required | Body/Form Data                |
-|--------|---------------------------------|---------------------------------------------|---------------|-------------------------------|
-| POST   | /like/like-comment              | Like and/or comment on a post               | Yes           | `postId`, `comment` (optional)|
-| POST   | /like/alllikes                  | Get all likes with post info                | Yes           | -                             |
+# API Documentation
 
 ---
 
-### Details
+## Auth & User
 
-#### Signup
-- **Endpoint:** `POST /users/signup`
-- **Description:** Register a new user.
-- **Body:** `name`, `lastname`, `email`, `password`, `passwordConfirm`
+### 1. Register User
+**Endpoint:** `/users/signup`  
+**Method:** `POST`  
+**Description:** Register a new user.
 
-#### Login
-- **Endpoint:** `POST /users/login`
-- **Description:** Login and receive a JWT token.
-- **Body:** `email`, `password`
+**Request Body:**
+```json
+{
+  "name": "John",
+  "lastname": "Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "passwordConfirm": "password123"
+}
+```
 
-#### Create Post
-- **Endpoint:** `POST /post/Create-Post`
-- **Description:** Create a new post. Accepts `title`, `description`, `likes`, `comments`, and an optional image file.
-- **Body/Form Data:** Use `multipart/form-data` for file upload.
-
-#### Like/Comment Post
-- **Endpoint:** `POST /like/like-comment`
-- **Description:** Like and/or comment on a post.
-- **Body:** `postId`, `comment` (optional)
-
-#### Get User Feed
-- **Endpoint:** `GET /post/getUserLoginFeed`
-- **Description:** Returns posts from the logged-in user and users they follow.
-
-#### Forgot Password
-- **Endpoint:** `POST /users/forgot-password`
-- **Description:** Request a password reset link.
-- **Body:** `email`
-
-#### Reset Password
-- **Endpoint:** `POST /users/reset-password`
-- **Description:** Reset password using the token sent to email.
-- **Body:** `token`, `password`
+**Response:**
+- `201 Created`  
+  ```json
+  {
+    "user": {
+      "id": 1,
+      "name": "John",
+      "lastname": "Doe",
+      "email": "john@example.com"
+    },
+    "token": "<JWT Token>"
+  }
+  ```
+- `400 Bad Request`: Validation errors.
 
 ---
 
-> All endpoints requiring authentication expect a valid JWT token in the `Authorization` header as `Bearer <token>`.
+### 2. Login User
+**Endpoint:** `/users/login`  
+**Method:** `POST`  
+**Description:** Authenticate user and get JWT token.
+
+**Request Body:**
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+- `200 OK`  
+  ```json
+  {
+    "user": {
+      "id": 1,
+      "name": "John",
+      "lastname": "Doe",
+      "email": "john@example.com"
+    },
+    "token": "<JWT Token>"
+  }
+  ```
+- `401 Unauthorized`: Invalid credentials.
+
+---
+
+### 3. Get Current User Profile
+**Endpoint:** `/users/profile`  
+**Method:** `GET`  
+**Auth:** `Bearer <token>`  
+**Description:** Get the profile of the logged-in user.
+
+**Response:**
+- `200 OK`
+  ```json
+  {
+    "user": {
+      "id": 1,
+      "name": "John",
+      "lastname": "Doe",
+      "email": "john@example.com"
+    }
+  }
+  ```
+- `401 Unauthorized`: Missing or invalid token.
+
+---
+
+### 4. Update User Profile
+**Endpoint:** `/users/profile/:id`  
+**Method:** `PUT`  
+**Auth:** `Bearer <token>`  
+**Description:** Update user profile.
+
+**Request Body:**
+```json
+{
+  "name": "John",
+  "lastname": "Smith",
+  "email": "johnsmith@example.com"
+}
+```
+
+**Response:**  
+- `200 OK`: Updated user object.
+
+---
+
+### 5. Forgot Password
+**Endpoint:** `/users/forgot-password`  
+**Method:** `POST`  
+**Description:** Request a password reset link.
+
+**Request Body:**
+```json
+{
+  "email": "john@example.com"
+}
+```
+
+**Response:**  
+- `200 OK`: Reset link sent.
+
+---
+
+### 6. Reset Password
+**Endpoint:** `/users/reset-password`  
+**Method:** `POST`  
+**Description:** Reset password using token.
+
+**Request Body:**
+```json
+{
+  "token": "<reset-token>",
+  "password": "newpassword123"
+}
+```
+
+**Response:**  
+- `200 OK`: Password reset successful.
+
+---
+
+## Follow
+
+### 1. Follow a User
+**Endpoint:** `/follow/:id/follow`  
+**Method:** `POST`  
+**Auth:** `Bearer <token>`  
+**Description:** Follow a user by their ID.
+
+**Response:**  
+- `200 OK`: Followed successfully.
+
+---
+
+### 2. Unfollow a User
+**Endpoint:** `/follow/:id/unfollow`  
+**Method:** `POST`  
+**Auth:** `Bearer <token>`  
+**Description:** Unfollow a user by their ID.
+
+**Response:**  
+- `200 OK`: Unfollowed successfully.
+
+---
+
+### 3. Get Followers
+**Endpoint:** `/follow/:id/followers`  
+**Method:** `GET`  
+**Description:** Get followers of a user.
+
+**Response:**  
+- `200 OK`: Array of follower users.
+
+---
+
+### 4. Get Followings
+**Endpoint:** `/follow/:id/followings`  
+**Method:** `GET`  
+**Description:** Get users followed by a user.
+
+**Response:**  
+- `200 OK`: Array of following users.
+
+---
+
+## Post
+
+### 1. Create Post
+**Endpoint:** `/post/Create-Post`  
+**Method:** `POST`  
+**Auth:** `Bearer <token>`  
+**Description:** Create a new post (optionally with image).
+
+**Request Body (form-data):**
+- `title` (string, required)
+- `description` (string, required)
+- `image` (file, optional)
+
+**Response:**  
+- `201 Created`: Post object.
+
+---
+
+### 2. Update Post
+**Endpoint:** `/post/update/:id`  
+**Method:** `PUT`  
+**Auth:** `Bearer <token>`  
+**Description:** Update an existing post by ID.
+
+**Request Body (form-data):**
+- `title` (string, optional)
+- `description` (string, optional)
+- `image` (file, optional)
+
+**Response:**  
+- `200 OK`: Updated post object.
+
+---
+
+### 3. Delete Post
+**Endpoint:** `/post/delete/:id`  
+**Method:** `DELETE`  
+**Auth:** `Bearer <token>`  
+**Description:** Delete a post by ID.
+
+**Response:**  
+- `200 OK`: Post deleted message.
+
+---
+
+### 4. Get All Posts
+**Endpoint:** `/post/getAllPosts`  
+**Method:** `GET`  
+**Auth:** `Bearer <token>`  
+**Description:** Get all posts with author info.
+
+**Response:**  
+- `200 OK`: Array of posts.
+
+---
+
+### 5. Get User Feed
+**Endpoint:** `/post/getUserLoginFeed`  
+**Method:** `GET`  
+**Auth:** `Bearer <token>`  
+**Description:** Get posts from the logged-in user and users they follow.
+
+**Response:**  
+- `200 OK`: Array of posts.
+
+---
+
+## Like & Comment
+
+### 1. Like and/or Comment on a Post
+**Endpoint:** `/like/like-comment`  
+**Method:** `POST`  
+**Auth:** `Bearer <token>`  
+**Description:** Like a post and/or add a comment in one request.
+
+**Request Body:**
+```json
+{
+  "postId": 1,
+  "comment": "Nice post!" // optional
+}
+```
+
+**Response:**  
+- `201 Created`
+  ```json
+  {
+    "message": "Like/commented Successfully",
+    "like": { ... },
+    "comment": { ... } // null if not provided
+  }
+  ```
+
+---
+
+### 2. Get All Likes
+**Endpoint:** `/like/alllikes`  
+**Method:** `POST`  
+**Auth:** `Bearer <token>`  
+**Description:** Get all likes with post info.
+
+**Response:**  
+- `200 OK`: Array of likes.
+
+---
+
+> **Note:** All endpoints requiring authentication expect a valid JWT token in the `Authorization` header as `Bearer <token>`.
