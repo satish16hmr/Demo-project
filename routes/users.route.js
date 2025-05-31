@@ -38,5 +38,7 @@ router.post('/reset-password', userController.resetPassword);
 
 router.delete('/delete/:id', authMiddleware.authentication, userController.deleteuser);
 
+router.get('/search', authMiddleware.authentication, userController.searchUsers);
+
 
 module.exports = router;

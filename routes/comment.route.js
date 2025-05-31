@@ -7,4 +7,8 @@ router.post('/posts/:id/comment', authMiddleware.authentication, commentControll
 
 router.get('/posts/:id/comments', authMiddleware.authentication, commentController.getComments);
 
+router.delete('/posts/:id/delete', authMiddleware.authentication, commentController.deleteComment);
+
+router.patch('/posts/:id/update', authMiddleware.authentication, commentController.updateComment);
+
 module.exports = router;

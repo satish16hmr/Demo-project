@@ -17,10 +17,11 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'socialmedia_posts',
-        allowed_formats: ['jpg', 'jpeg', 'png'],
+        resource_type: 'auto',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', 'webm'],
         transformation: [{ width: 800, height: 800, crop: 'limit' }]
     }
-});
+}); 
 
 const upload = multer({ storage: storage });
 

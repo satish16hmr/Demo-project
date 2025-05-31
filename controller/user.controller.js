@@ -126,7 +126,7 @@ module.exports.forgotPassword = async (req, res) => {
 
     const resetToken = crypto.randomBytes(20).toString('hex');
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(Date.now() + 3600000); 
+    user.resetPasswordExpires = new Date(Date.now() + 3600000);
     await user.save();
 
     const resetUrl = `http://localhost:2000/reset-password?token=${resetToken}`;
@@ -150,7 +150,7 @@ module.exports.forgotPassword = async (req, res) => {
 
     res.status(200).json({
       message: "A password reset link has been sent to your email. Please verify it.",
-      resetToken 
+      resetToken
     });
   } catch (error) {
     console.error(error);
@@ -273,7 +273,7 @@ module.exports.updateProfile = async (req, res) => {
 //   }
 // };
 
-// delete user by id
+
 
 
 module.exports.deleteuser = async (req, res) => {
@@ -288,6 +288,35 @@ module.exports.deleteuser = async (req, res) => {
     await user.destroy();
 
     res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+
+
+module.exports.searchUsers = async (req, res) => {
+  const { query } = req.query;
+  console.log(query);
+
+  try {
+    if (!query) {
+      return res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${query}%` } },
+          { lastname: { [Op.iLike]: `%${query}%` } },
+          { email: { [Op.iLike]: `%${query}%` } }
+        ]
+      },
+      attributes: ['id', 'name', 'lastname', 'email']
+    });
+
+    res.status(200).json(users);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

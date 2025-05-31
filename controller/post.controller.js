@@ -83,6 +83,8 @@ exports.deletePost = async (req, res) => {
 
 
 exports.getAllPosts = async (req, res) => {
+    console.log(req.user);
+    
     try {
         const posts = await Post.findAll({
             include: [{

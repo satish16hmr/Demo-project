@@ -1,4 +1,5 @@
 const express = require('express');
+var cors = require('cors')
 const sequelize = require('./config/db');
 const userRoutes = require('./routes/users.route');
 const followRoutes = require('./routes/follow.route');
@@ -11,6 +12,7 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
 const app = express();
+app.use(cors())
 const port = process.env.PORT || 3000;
 
 app.use(cookieParser());
