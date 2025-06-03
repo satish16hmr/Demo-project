@@ -1,0 +1,12 @@
+Hello
+@Harshil Bodara Sir,
+Here are the latest updates for Social-App as of June 3,2025:-
+
+List of Completed Tasks:-
+    1) Implemented a notification API that triggers notifications when a user likes a post, comments, or follows another user.[Done]
+    2) Created a delete notification API for notification.[Done]
+    3) Fixed issues in the Like Post API to ensure liking and unliking work correctly, and added notifications for likes.[Done]
+    4) Made improvements to the Comment and Follow APIs to enhance functionality and ensure proper notification triggers.[Done]
+    5) I have tested and Completed all the APIs.[Done]
+
+Thanks!

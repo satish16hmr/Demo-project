@@ -82,11 +82,14 @@ exports.deletePost = async (req, res) => {
 
 
 
+// this api getting all the post of the which user is author of the post 
+
 exports.getAllPosts = async (req, res) => {
-    console.log(req.user);
+    const userId = req.params.id;
 
     try {
         const posts = await postService.getAllPosts({
+            where: { author: userId },
             include: [{
                 model: User,
                 as: 'user',
@@ -102,6 +105,8 @@ exports.getAllPosts = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
 
 
 // this api getting all the post from their friends and themselves
@@ -142,6 +147,8 @@ exports.getUserLoginFeed = async (req, res) => {
 
 
 
+// their is two apis in following route both are commend right now 
+
 // exports.getalllikesofthepost = async (req, res) => {
 //     const postId = req.params.id;
 
@@ -170,6 +177,31 @@ exports.getUserLoginFeed = async (req, res) => {
 //     }
 //     catch (error) {
 //         console.error('Error fetching likes:', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// }
+
+
+
+// exports.getallpostofme = async (req, res) => {
+//     const userId = req.user.id;
+//     console.log('User ID:', userId);
+
+//     try {
+//         const posts = await Post.findAll({
+//             where: { author: userId },
+//             include: [{
+//                 model: User,
+//                 as: 'user',
+//                 attributes: ['id', 'name', 'lastname']
+//             }],
+//             order: [['created_at', 'DESC']]
+//         });
+
+//         res.status(200).json(posts);
+//     }
+//     catch (error) {
+//         console.error('Error fetching user posts:', error);
 //         res.status(500).json({ message: 'Internal server error' });
 //     }
 // }

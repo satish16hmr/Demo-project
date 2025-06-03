@@ -1,6 +1,7 @@
 const Follower = require('../model/follow.model');
 const User = require('../model/user.model');
 const followService = require('../services/follow.services');
+const notificationService = require('../services/notifcation.services');
 
 
 module.exports.followUser = async (req, res) => {
@@ -13,7 +14,18 @@ module.exports.followUser = async (req, res) => {
 
     try {
         await followService.followUser(follower_id, following_id);
-        res.status(200).json({ message: 'User followed successfully.' });
+
+        const notification = await notificationService.createNotification({
+            userId: following_id,
+            fromUserId: follower_id,
+            type: 'follow',
+            message: 'started following you'
+        });
+
+        res.status(200).json({ 
+            message: 'User followed successfully.',
+            notification 
+        });
     } catch (err) {
         res.status(400).json({ message: err.message || 'Server error.' });
     }

@@ -9,9 +9,10 @@ async function getPostById(id) {
     return Post.findByPk(id);
 }
 
-async function getAllPosts() {
-    return Post.findAll();
+async function getAllPosts(options = {}) {
+    return Post.findAll(options);
 }
+
 
 async function updatePost(id, data) {
     return Post.update(data, { where: { id } });

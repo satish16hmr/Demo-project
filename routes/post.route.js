@@ -12,7 +12,7 @@ router.put('/update/:id', authMiddleware.authentication, upload.single('image'),
 
 router.delete('/delete/:id', authMiddleware.authentication, postController.deletePost);
 
-router.get('/getAllPosts', authMiddleware.authentication, postController.getAllPosts);
+router.get('/getAllPosts/:id', authMiddleware.authentication, postController.getAllPosts);
 
 router.get('/getUserLoginFeed', authMiddleware.authentication, postController.getUserLoginFeed);
 

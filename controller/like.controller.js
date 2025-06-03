@@ -1,49 +1,52 @@
 const Like = require('../model/like.model');
 const Post = require('../model/post.model');
 const likeService = require('../services/like.services');
+const notificationService = require('../services/notifcation.services');
 
-exports.likePost = async (req, res) => {
+
+exports.toggleLikePost = async (req, res) => {
     const userId = req.user.id;
     const postId = req.params.id;
 
     try {
-        const like = await likeService.likePost(userId, postId);
-        res.status(201).json({
-            message: 'Post liked successfully',
-            like
-        });
-    } catch (error) {
-        if (error.message === 'Post not found') {
-            return res.status(404).json({ message: error.message });
+        const existingLike = await Like.findOne({ where: { userId, postId } });
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
         }
-        console.error('Error liking post:', error);
+
+        if (existingLike) {
+            await existingLike.destroy();
+            return res.status(200).json({ message: 'Post unliked successfully' });
+        }
+        else {
+            const like = await Like.create({ userId, postId });
+
+            if (post.author !== userId) {
+                await notificationService.createNotification({
+                    userId: post.author,
+                    fromUserId: userId,
+                    type: 'like',
+                    message: 'liked your post'
+                });
+            }
+
+            return res.status(201).json({ message: 'Post liked successfully', like });
+        }
+    } catch (error) {
+        console.error('Error toggling like:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 
-exports.unlikePost = async (req, res) => {
-    const userId = req.user.id;
-    const postId = req.params.id;
-
-    try {
-        const like = await Like.findOne({ where: { userId, postId } });
-        if (!like) {
-            return res.status(404).json({ message: 'Like not found' });
-        }
-
-        await like.destroy();
-
-        res.status(200).json({ message: 'Post unliked successfully' });
-    } catch (error) {
-        console.error('Error unliking post:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
 
 exports.likes = async (req, res) => {
     try {
+        const postId = req.params.id;
         const likes = await Like.findAll({
+            where: { postId }, 
             include: [
                 {
                     model: Post,

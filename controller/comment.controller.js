@@ -1,6 +1,8 @@
 const Comment = require('../model/comment.model');
 const Post = require('../model/post.model');
 const commentService = require('../services/comment.services');
+const notificationService = require('../services/notifcation.services');
+
 
 exports.commentPost = async (req, res) => {
     const userId = req.user.id;
@@ -25,6 +27,15 @@ exports.commentPost = async (req, res) => {
             text
         });
 
+        if (post.author !== userId) {
+            await notificationService.createNotification({
+                userId: post.author,
+                fromUserId: userId,
+                type: 'comment',
+                message: `commented on your post: "${text}"`
+            });
+        }
+
         res.status(201).json({
             message: 'Comment added successfully',
             comment
@@ -34,6 +45,7 @@ exports.commentPost = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 exports.getComments = async (req, res) => {
     const postId = req.params.id;
@@ -74,7 +86,7 @@ exports.deleteComment = async (req, res) => {
     }
 }
 
-    
+
 exports.updateComment = async (req, res) => {
     const commentId = req.params.id;
     const userId = req.user.id;

@@ -114,7 +114,7 @@ module.exports.forgotPassword = async (req, res) => {
   try {
     // const user = await User.findOne({ where: { email } });
     const user = await userService.findUserByEmail(email);
-    
+
     if (!user) {
       return res.status(200).send('If that email exists, a reset link has been sent.');
     }
@@ -227,6 +227,13 @@ module.exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser && existingUser.id !== user.id) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+    }
+
     user.name = name || user.name;
     user.lastname = lastname || user.lastname;
     user.email = email || user.email;
@@ -234,7 +241,7 @@ module.exports.updateProfile = async (req, res) => {
     await user.save();
 
     res.status(200).json({
-      message: 'User profile updated successfully',
+      message: 'User profile updated successfully', 
       user: {
         id: user.id,
         name: user.name,
