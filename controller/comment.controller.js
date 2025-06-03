@@ -1,5 +1,6 @@
 const Comment = require('../model/comment.model');
 const Post = require('../model/post.model');
+const commentService = require('../services/comment.services');
 
 exports.commentPost = async (req, res) => {
     const userId = req.user.id;
@@ -18,7 +19,7 @@ exports.commentPost = async (req, res) => {
             return res.status(400).json({ message: 'Comment text cannot be empty' });
         }
 
-        const comment = await Comment.create({
+        const comment = await commentService.createComment({
             userId,
             postId,
             text
@@ -73,7 +74,7 @@ exports.deleteComment = async (req, res) => {
     }
 }
 
-
+    
 exports.updateComment = async (req, res) => {
     const commentId = req.params.id;
     const userId = req.user.id;

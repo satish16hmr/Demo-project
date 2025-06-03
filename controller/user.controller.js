@@ -5,6 +5,8 @@ const User = require('../model/user.model');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
+const userService = require('../services/user.services');
+
 
 console.log('User controller loaded');
 
@@ -18,35 +20,26 @@ module.exports.signup = async (req, res) => {
 
   try {
     const { name, lastname, email, password, passwordConfirm } = req.body;
-    console.log('Signup request received:', { name, lastname, email });
     if (!name || !email || !password || !passwordConfirm) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-
     if (password !== passwordConfirm) {
       return res.status(400).json({ message: 'Passwords do not match' });
     }
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await userService.findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({
-      name,
-      lastname,
-      email,
-      password: hashedPassword
-    });
-
+    const newUser = await userService.createUser({ name, lastname, email, password });
     res.status(201).json({ data: newUser, message: 'User created successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // login user 
 
@@ -63,7 +56,7 @@ module.exports.login = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const user = await User.findOne({ where: { email } });
+    const user = await userService.findUserByEmail(email);
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
@@ -74,7 +67,6 @@ module.exports.login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    // res.cookie('token', token);
 
     res.status(200).json({
       message: 'Login successful',
@@ -86,6 +78,7 @@ module.exports.login = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // get user profile
 
@@ -119,7 +112,9 @@ module.exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const user = await User.findOne({ where: { email } });
+    // const user = await User.findOne({ where: { email } });
+    const user = await userService.findUserByEmail(email);
+    
     if (!user) {
       return res.status(200).send('If that email exists, a reset link has been sent.');
     }
@@ -298,27 +293,14 @@ module.exports.deleteuser = async (req, res) => {
 
 module.exports.searchUsers = async (req, res) => {
   const { query } = req.query;
-  console.log(query);
-
   try {
     if (!query) {
       return res.status(400).json({ message: 'Query parameter is required' });
     }
-
-    const users = await User.findAll({
-      where: {
-        [Op.or]: [
-          { name: { [Op.iLike]: `%${query}%` } },
-          { lastname: { [Op.iLike]: `%${query}%` } },
-          { email: { [Op.iLike]: `%${query}%` } }
-        ]
-      },
-      attributes: ['id', 'name', 'lastname', 'email']
-    });
-
+    const users = await userService.searchUsers(query);
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};

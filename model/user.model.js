@@ -47,13 +47,17 @@ User.prototype.validatePassword = async function (password) {
 User.associate = (models) => {
   User.hasMany(models.Follower, { foreignKey: 'following_id', as: 'Followers' });
   User.hasMany(models.Follower, { foreignKey: 'follower_id', as: 'Followings' });
-};
-
-User.associate = (models) => {
   User.hasMany(models.Post, { foreignKey: 'author', as: 'posts' });
   User.hasMany(models.Like, { foreignKey: 'userId', as: 'likes' });
   // User.hasMany(models.Comment, { foreignKey: 'author', as: 'comments' });
-
 };
+
+
+// User.associate = (models) => {
+//   User.hasMany(models.Post, { foreignKey: 'author', as: 'posts' });
+//   User.hasMany(models.Like, { foreignKey: 'userId', as: 'likes' });
+// User.hasMany(models.Comment, { foreignKey: 'author', as: 'comments' });
+
+// };
 
 module.exports = User;

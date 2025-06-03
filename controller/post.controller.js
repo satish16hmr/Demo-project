@@ -1,7 +1,7 @@
 const User = require('../model/user.model');
 const Post = require('../model/post.model');
 const Friend = require('../model/follow.model');
-// const { Op } = require('sequelize');
+const postService = require('../services/post.services');
 
 
 exports.createPost = async (req, res) => {
@@ -11,7 +11,7 @@ exports.createPost = async (req, res) => {
     console.log(image);
 
     try {
-        const newPost = await Post.create({
+        const newPost = await postService.createPost({
             author,
             title,
             description,
@@ -35,7 +35,7 @@ exports.updatePost = async (req, res) => {
     const { title, description, likes, comments } = req.body;
 
     try {
-        const post = await Post.findByPk(postId);
+        const post = await postService.getPostById(postId);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
@@ -65,7 +65,7 @@ exports.deletePost = async (req, res) => {
     const postId = req.params.id;
 
     try {
-        const post = await Post.findByPk(postId);
+        const post = await postService.getPostById(postId);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
@@ -84,9 +84,9 @@ exports.deletePost = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
     console.log(req.user);
-    
+
     try {
-        const posts = await Post.findAll({
+        const posts = await postService.getAllPosts({
             include: [{
                 model: User,
                 as: 'user',
