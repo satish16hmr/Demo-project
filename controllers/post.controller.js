@@ -7,7 +7,7 @@ import postService from '../services/post.service.js';
 import NotificationService from '../services/user.service.js';
 
 // Create a new post
-async function createPost(req, res) {   
+async function createPost(req, res) {
     try {
         const { title, description, likes, comments } = req.body;
         const author = req.user.id;
@@ -282,7 +282,7 @@ async function deleteComment(req, res) {
 
 // Update a comment
 async function updateComment(req, res) {
-  const commentId = req.params.id;
+    const commentId = req.params.id;
     const userId = req.user.id;
     const { text } = req.body;
 

@@ -18,11 +18,12 @@ async function signup(req, res) {
 
   try {
     const { name, lastname, email, password, passwordConfirm } = req.body;
+
     if (!name || !email || !password || !passwordConfirm) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     if (password !== passwordConfirm) {
-      return res.status(400).json({ message: 'Passwords do not match' });
+      return res.status(400).json({ message: 'Passwords does not match' });
     }
 
     const existingUser = await userService.findUserByEmail(email);
@@ -31,7 +32,9 @@ async function signup(req, res) {
     }
 
     const newUser = await userService.createUser({ name, lastname, email, password });
+
     res.status(201).json({ data: newUser, message: 'User created successfully' });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
@@ -179,7 +182,7 @@ async function resetPassword(req, res) {
 }
 
 // get user profile by id
-async function getuserById(req, res) {
+async function getUserById(req, res) {
   const userId = req.params.id;
 
   try {
@@ -243,7 +246,7 @@ async function updateProfile(req, res) {
 }
 
 // delete user profile
-async function deleteuser(req, res) {
+async function deleteUser(req, res) {
   const userId = req.params.id;
 
   try {
@@ -367,10 +370,10 @@ async function getNotifications(req, res) {
         message: notification.message,
         fromUser: notification.fromUser
           ? {
-              id: notification.fromUser.id,
-              name: notification.fromUser.name,
-              lastname: notification.fromUser.lastname
-            }
+            id: notification.fromUser.id,
+            name: notification.fromUser.name,
+            lastname: notification.fromUser.lastname
+          }
           : null,
         createdAt: notification.createdAt
       }))
@@ -407,9 +410,9 @@ const userController = {
   logout,
   forgotPassword,
   resetPassword,
-  getuserById,
+  getUserById,
   updateProfile,
-  deleteuser,
+  deleteUser,
   searchUsers,
   followUser,
   unfollowUser,

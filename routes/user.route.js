@@ -27,7 +27,7 @@ router.get('/profile', authMiddleware, userController.getProfile);
 
 router.post('/logout', userController.logout);
 
-router.get('/profile/:id', authMiddleware, userController.getuserById);
+router.get('/profile/:id', authMiddleware, userController.getUserById);
 
 router.put('/profile/:id', authMiddleware, userController.updateProfile);
 
@@ -35,7 +35,7 @@ router.post('/forgot-password', userController.forgotPassword);
 
 router.post('/reset-password', userController.resetPassword);
 
-router.delete('/delete/:id', authMiddleware, userController.deleteuser);
+router.delete('/delete/:id', authMiddleware, userController.deleteUser);
 
 router.get('/search', authMiddleware, userController.searchUsers);
 
