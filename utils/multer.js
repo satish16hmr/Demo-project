@@ -1,7 +1,10 @@
-require('dotenv').config();
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('cloudinary').v2;
+import dotenv from 'dotenv';
+import multer from 'multer';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
+
+dotenv.config();
+
 
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
     throw new Error('Cloudinary environment variables are not set. Please check your .env file.');
@@ -21,8 +24,8 @@ const storage = new CloudinaryStorage({
         allowed_formats: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', 'webm'],
         transformation: [{ width: 800, height: 800, crop: 'limit' }]
     }
-}); 
+});
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+export default upload;

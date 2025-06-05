@@ -1,12 +1,12 @@
-const jwt = require('jsonwebtoken');
-const User = require('../model/user.model');
+import jwt from 'jsonwebtoken';
+import User from '../models/user.model.js';
 
-module.exports.authentication = async (req, res, next) => {
+const authentication = async (req, res, next) => {
   let token = req.cookies?.token;
 
   if (!token && req.headers['authorization']) {
     const authHeader = req.headers['authorization'];
-    if (authHeader.startsWith('Bearer ')) {
+    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
       token = authHeader.slice(7).trim();
     }
   }
@@ -31,4 +31,4 @@ module.exports.authentication = async (req, res, next) => {
   }
 };
 
-
+export default authentication;

@@ -1,20 +1,22 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
-// const { post } = require('../routes/follow.route');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Notification = sequelize.define('Notification', {
     type: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+
     message: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+
     isRead: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
+
 }, {
     timestamps: true,
 });
@@ -25,7 +27,7 @@ Notification.associate = (models) => {
     // Notification.belongsTo(models.Post, { foreignKey: 'postId', as: 'post' });
 };
 
-module.exports = Notification;
+export default Notification;
 
 
 

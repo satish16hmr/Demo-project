@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
-const bcrypt = require('bcrypt');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
+import bcrypt from 'bcrypt';
 
 const User = sequelize.define('User',
   {
@@ -36,8 +36,7 @@ const User = sequelize.define('User',
 
   }, {
   timestamps: true,
-}
-);
+});
 
 User.prototype.validatePassword = async function (password) {
   return bcrypt.compare(password, this.password);
@@ -52,12 +51,4 @@ User.associate = (models) => {
   // User.hasMany(models.Comment, { foreignKey: 'author', as: 'comments' });
 };
 
-
-// User.associate = (models) => {
-//   User.hasMany(models.Post, { foreignKey: 'author', as: 'posts' });
-//   User.hasMany(models.Like, { foreignKey: 'userId', as: 'likes' });
-// User.hasMany(models.Comment, { foreignKey: 'author', as: 'comments' });
-
-// };
-
-module.exports = User;
+export default User;

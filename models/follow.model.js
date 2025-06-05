@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Follower = sequelize.define('followers', {
   id: {
@@ -33,4 +33,5 @@ Follower.associate = (models) => {
   Follower.belongsTo(models.User, { foreignKey: 'following_id', as: 'Following' });
 };
 
-module.exports = Follower;
+
+export default Follower;

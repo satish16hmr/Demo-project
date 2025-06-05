@@ -1,6 +1,6 @@
-const User = require('./user.model');
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import User from './user.model.js';
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Like = sequelize.define('Like', {
     userId: {
@@ -8,27 +8,25 @@ const Like = sequelize.define('Like', {
         allowNull: false,
         references: {
             model: User,
-            key: 'id'
-        }
+            key: 'id',
+        },
     },
     postId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'Posts',
-            key: 'id'
-        }
-    }
-},
-    {
-        timestamps: true,
-    });
+            key: 'id',
+        },
+    },
+}, {
+    timestamps: true,
+});
 
 // Association method
-
 Like.associate = (models) => {
     Like.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
     Like.belongsTo(models.Post, { foreignKey: 'postId', as: 'post' });
-}
+};
 
-module.exports = Like;
+export default Like;

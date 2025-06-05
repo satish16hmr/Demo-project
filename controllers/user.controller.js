@@ -1,18 +1,16 @@
-const { validationResult } = require('express-validator');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../model/user.model');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
-const userService = require('../services/user.services');
-
-
-console.log('User controller loaded');
+import User from '../models/user.model.js';
+import Notification from '../models/notification.model.js';
+import NotificationService from '../services/user.service.js';
+import userService from '../services/user.service.js';
+import { validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import { Op } from 'sequelize';
 
 // signup user
-
-module.exports.signup = async (req, res) => {
+async function signup(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -38,12 +36,10 @@ module.exports.signup = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
+}
 
-
-// login user 
-
-module.exports.login = async (req, res) => {
+// login user
+async function login(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -77,12 +73,10 @@ module.exports.login = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
-
+}
 
 // get user profile
-
-module.exports.getProfile = (req, res) => {
+async function getProfile(req, res) {
   try {
     res.status(200).json({
       message: 'User profile fetched successfully',
@@ -91,28 +85,24 @@ module.exports.getProfile = (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
-};
+}
 
 // logout user
-
-module.exports.logout = (req, res) => {
+async function logout(req, res) {
   try {
     res.clearCookie('token');
-
     res.status(200).json({ message: 'Logged out successfully.' });
   } catch (err) {
     console.error('Logout error:', err);
     res.status(500).json({ message: 'Server error during logout.' });
   }
-};
+}
 
 // forgot password
-
-module.exports.forgotPassword = async (req, res) => {
+async function forgotPassword(req, res) {
   const { email } = req.body;
 
   try {
-    // const user = await User.findOne({ where: { email } });
     const user = await userService.findUserByEmail(email);
 
     if (!user) {
@@ -151,11 +141,10 @@ module.exports.forgotPassword = async (req, res) => {
     console.error(error);
     res.status(500).send('Server error.');
   }
-};
+}
 
 // reset password
-
-module.exports.resetPassword = async (req, res) => {
+async function resetPassword(req, res) {
   const { token, password } = req.body;
 
   try {
@@ -187,11 +176,10 @@ module.exports.resetPassword = async (req, res) => {
       message: "Server error."
     });
   }
-};
+}
 
 // get user profile by id
-
-module.exports.getuserById = async (req, res) => {
+async function getuserById(req, res) {
   const userId = req.params.id;
 
   try {
@@ -213,11 +201,10 @@ module.exports.getuserById = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
+}
 
 // update user profile
-
-module.exports.updateProfile = async (req, res) => {
+async function updateProfile(req, res) {
   const userId = req.params.id;
   const { name, lastname, email } = req.body;
 
@@ -241,7 +228,7 @@ module.exports.updateProfile = async (req, res) => {
     await user.save();
 
     res.status(200).json({
-      message: 'User profile updated successfully', 
+      message: 'User profile updated successfully',
       user: {
         id: user.id,
         name: user.name,
@@ -256,29 +243,7 @@ module.exports.updateProfile = async (req, res) => {
 }
 
 // delete user profile
-
-// module.exports.deleteProfile = async (req, res) => {
-//   const userId = req.params.id;
-
-//   try {
-//     const user = await User.findByPk(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     await user.destroy();
-
-//     res.status(200).json({ message: 'User profile deleted successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
-
-
-
-
-module.exports.deleteuser = async (req, res) => {
+async function deleteuser(req, res) {
   const userId = req.params.id;
 
   try {
@@ -296,9 +261,8 @@ module.exports.deleteuser = async (req, res) => {
   }
 }
 
-
-
-module.exports.searchUsers = async (req, res) => {
+// search users
+async function searchUsers(req, res) {
   const { query } = req.query;
   try {
     if (!query) {
@@ -310,4 +274,149 @@ module.exports.searchUsers = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
+}
+
+// follow user
+async function followUser(req, res) {
+  const follower_id = req.user.id;
+  const following_id = parseInt(req.params.id);
+
+  if (follower_id === following_id) {
+    return res.status(400).json({ message: "You can't follow yourself." });
+  }
+
+  try {
+    await userService.followUser(follower_id, following_id);
+
+    const notification = await NotificationService.createNotification({
+      userId: following_id,
+      fromUserId: follower_id,
+      type: 'follow',
+      message: 'started following you'
+    });
+
+    res.status(200).json({
+      message: 'User followed successfully.',
+      notification
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message || 'Server error.' });
+  }
+}
+
+// unfollow user
+async function unfollowUser(req, res) {
+  const follower_id = req.user.id;
+  const following_id = parseInt(req.params.id);
+
+  if (follower_id === following_id) {
+    return res.status(400).json({ message: "You can't unfollow yourself." });
+  }
+
+  try {
+    await userService.unfollowUser(follower_id, following_id);
+    res.status(200).json({ message: 'User unfollowed successfully.' });
+  } catch (err) {
+    res.status(400).json({ message: err.message || 'Server error.' });
+  }
+}
+
+// get followers
+async function getFollowers(req, res) {
+  const userId = parseInt(req.params.id);
+  try {
+    const followers = await userService.getFollowers(userId);
+    res.status(200).json({ followers });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server error while fetching followers.',
+      error: err.message
+    });
+  }
+}
+
+// get following
+async function getFollowing(req, res) {
+  const userId = parseInt(req.params.id);
+  try {
+    const following = await userService.getFollowing(userId);
+    res.status(200).json({ following });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.' });
+  }
+}
+
+async function getNotifications(req, res) {
+  const userId = req.user.id;
+
+  try {
+    const notifications = await Notification.findAll({
+      where: { userId },
+      order: [['createdAt', 'DESC']],
+      include: [{
+        model: User,
+        as: 'fromUser',
+        attributes: ['id', 'name', 'lastname']
+      }]
+    });
+
+    res.status(200).json({
+      notifications: notifications.map(notification => ({
+        id: notification.id,
+        type: notification.type,
+        message: notification.message,
+        fromUser: notification.fromUser
+          ? {
+              id: notification.fromUser.id,
+              name: notification.fromUser.name,
+              lastname: notification.fromUser.lastname
+            }
+          : null,
+        createdAt: notification.createdAt
+      }))
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while fetching notifications.' });
+  }
+}
+
+async function deleteNotification(req, res) {
+  const notificationId = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    const notification = await Notification.findOne({ where: { id: notificationId, userId } });
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+
+    await notification.destroy();
+    res.status(200).json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+const userController = {
+  signup,
+  login,
+  getProfile,
+  logout,
+  forgotPassword,
+  resetPassword,
+  getuserById,
+  updateProfile,
+  deleteuser,
+  searchUsers,
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing,
+  getNotifications,
+  deleteNotification
 };
+
+export default userController;

@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Comment = sequelize.define('Comment', {
     userId: {
@@ -32,4 +32,4 @@ Comment.associate = (models) => {
     Comment.belongsTo(models.Post, { foreignKey: 'postId', as: 'post' });
 };
 
-module.exports = Comment;
+export default Comment;

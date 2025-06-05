@@ -1,20 +1,31 @@
-const express = require('express');
+import express from 'express';
+import postController from '../controllers/post.controller.js';
+import authentication from '../middleware/auth.middleware.js';
+import upload from '../utils/multer.js';
+
 const router = express.Router();
-const postController = require('../controller/post.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const upload = require('../utils/multer');
+// console.log('post routes loaded');
 
-console.log('post routes loaded');
+router.post('/Create-Post', authentication, upload.single('image'), postController.createPost);
 
-router.post('/Create-Post', authMiddleware.authentication, upload.single('image'), postController.createPost);
+router.put('/update/:id', authentication, upload.single('image'), postController.updatePost);
 
-router.put('/update/:id', authMiddleware.authentication, upload.single('image'), postController.updatePost);
+router.delete('/delete/:id', authentication, postController.deletePost);
 
-router.delete('/delete/:id', authMiddleware.authentication, postController.deletePost);
+router.get('/getAllPosts/:id', authentication, postController.getAllPosts);
 
-router.get('/getAllPosts/:id', authMiddleware.authentication, postController.getAllPosts);
+router.get('/getUserLoginFeed', authentication, postController.getUserLoginFeed);
 
-router.get('/getUserLoginFeed', authMiddleware.authentication, postController.getUserLoginFeed);
+router.post('/like/:id', authentication, postController.toggleLikePost);
 
+router.get('/likes/:id', authentication, postController.likes);
 
-module.exports = router;
+router.post('/posts/:id/comment', authentication, postController.commentPost);
+
+router.get('/posts/:id/comments', authentication, postController.getComments);
+
+router.delete('/posts/:id/delete', authentication, postController.deleteComment);
+
+router.patch('/posts/:id/update', authentication, postController.updateComment);
+
+export default router;

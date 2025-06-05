@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Post = sequelize.define('Post', {
     author: {
@@ -7,8 +7,8 @@ const Post = sequelize.define('Post', {
         allowNull: false,
         references: {
             model: 'Users',
-            key: 'id'
-        }
+            key: 'id',
+        },
     },
 
     title: {
@@ -28,27 +28,26 @@ const Post = sequelize.define('Post', {
 
     likes: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
     },
 
     comments: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
     },
 
     created_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    }
+        defaultValue: DataTypes.NOW,
+    },
 
-},
-    {
-        timestamps: false,
-        tableName: 'Posts'
-    });
+}, {
+    timestamps: false,
+    tableName: 'Posts',
+});
 
 Post.associate = (models) => {
     Post.belongsTo(models.User, { foreignKey: 'author', as: 'user' });
 };
 
-module.exports = Post;
+export default Post;
