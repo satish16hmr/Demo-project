@@ -1,15 +1,4 @@
-Hello 
-@Harshil Bodara Sir,
-Here are the latest updates for Social-media-app as of Jun 30,2025:
 
-List of Completed Tasks:-
-
-    1) I have Integrated the API to view all likes on a post in userprofile, allowing users to see all the likes on a post.[Done]
-    2) I have Completed comment functionality on posts in the user profile, allowing users to comment directly from there.[Done]
-    3) I have added loader to the my all the pages.[Done]
-    4) I have add toast message on Create-update post and on delete post.[Done]
-
-Thanks!
 
 
 
