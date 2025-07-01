@@ -50,7 +50,7 @@ import {
   notifyDelete,
   notifyInfo,
   notifySuccess,
-} from "../../components/Toastify";
+} from "../../components/toastify";
 import { useNavigate, Link } from "react-router-dom";
 
 import {

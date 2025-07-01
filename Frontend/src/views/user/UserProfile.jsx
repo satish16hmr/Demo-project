@@ -36,14 +36,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import moment from "moment";
 import { motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
-import { notifySuccess } from "../../components/Toastify";
+import { notifySuccess } from "../../components/toastify";
 
 import {
   fetchFollowers,
   fetchFollowing,
   followUser,
   unfollowUser,
-} from "../../store/actions/follow.action";
+} from "../../store/actions/user.action";
 import {
   getAllPosts,
   toggleLike,
@@ -77,7 +77,7 @@ export default function UserProfile() {
   const { likesByPostId } = useSelector((state) => state.post);
 
   const { followingIds, followers, following } = useSelector(
-    (state) => state.follow
+    (state) => state.user
   );
   const { posts, commentsByPostId } = useSelector((state) => state.post);
 
@@ -90,8 +90,27 @@ export default function UserProfile() {
       dispatch(fetchFollowing(currentUser.id));
       dispatch(fetchFollowers(Number(id)));
     }
-    dispatch(getAllPosts(Number(id)));
+    dispatch(getAllPosts(Number(id))).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        const allPosts = res.payload.posts || [];
+        allPosts.forEach((post) => {
+          dispatch(getLikesForPost(post.id));
+        });
+      }
+    });
   }, [id, currentUser?.id]);
+
+  useEffect(() => {
+    if (id && currentUser?.id) {
+      dispatch(getAllPosts(Number(id)));
+    }
+  }, [posts.map((p) => `${p.id}-${p.likesCount}`).join(",")]);
+
+  useEffect(() => {
+    if (currentUser?.id === Number(id)) {
+      fetchProfileData();
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     setOpenModal(false);
@@ -123,9 +142,13 @@ export default function UserProfile() {
   const refreshPosts = () => dispatch(getAllPosts(Number(id)));
 
   const handleLike = (postId) => {
-    dispatch(toggleLike(postId)).then(() => {
-      notifySuccess(post.liked ? "Removed like" : "Liked post");
-      refreshPosts();
+    dispatch(toggleLike(postId)).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        dispatch(getPostComments(postId));
+        dispatch(getLikesForPost(postId));
+        dispatch(getAllPosts(Number(id)));
+        // notifySuccess("Like status updated");
+      }
     });
   };
 
@@ -326,9 +349,8 @@ export default function UserProfile() {
                       sx={{ cursor: "pointer" }}
                       onClick={() => handleOpenLikesDialog(post.id)}
                     >
-                      {post.likes || 0}
+                      {likesByPostId[post.id]?.length ?? post.likes ?? 0}
                     </Typography>
-
                     <Tooltip title="Comments">
                       <IconButton
                         onClick={() => toggleCommentsVisibility(post.id)}
@@ -497,7 +519,7 @@ export default function UserProfile() {
                 <ListItemButton
                   key={user.id}
                   onClick={() => {
-                    setOpenModal(false); // Close the modal
+                    setOpenModal(false);
                     navigate(`/profile/${user.id}`);
                   }}
                 >

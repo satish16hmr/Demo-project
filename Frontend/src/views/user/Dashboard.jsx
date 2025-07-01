@@ -48,12 +48,11 @@ export default function Dashboard() {
   const location = useLocation();
   const theme = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   const { user } = useSelector((state) => state.auth);
   const notifications = useSelector((state) => state.user?.notifications || []);
 
-  // Simulate loading or wait for user data
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -174,7 +173,7 @@ export default function Dashboard() {
           bgcolor: "#101418",
         }}
       >
-        <Loader /> {/* Use your Loader component here */}
+        <Loader />
       </Box>
     );
   }

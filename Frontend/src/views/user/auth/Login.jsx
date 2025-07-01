@@ -22,7 +22,6 @@ export default function Login() {
     try {
       await dispatch(login(form)).unwrap();
       setForm({ email: '', password: '' });
-      // navigate('/profile');
       navigate('/dashboard');
     } catch (err) {
       console.error(err);

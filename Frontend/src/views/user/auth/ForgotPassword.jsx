@@ -1,33 +1,36 @@
-import React, { useState } from "react";
-import { TextField, Button, Typography, Container, Box, Alert } from "@mui/material";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  Alert,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { forgotPassword } from "../../../store/actions/auth.action";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { loading, error, success } = useSelector((state) => state.auth);
 
-  const handleSubmit = async (e) => {
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setSuccess("");
-    setError("");
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users/forgot-password`,
-        { email },
-        { withCredentials: true }
-      );
-      setSuccess(res.data.message || "If that email exists, a reset link has been sent.");
-    } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong.");
-    }
-    setLoading(false);
+    dispatch(forgotPassword(email));
   };
 
   return (
-    <Container maxWidth="xs" sx={{ minHeight: "90vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Container
+      maxWidth="xs"
+      sx={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box sx={{ width: "100%", p: 3, boxShadow: 3, borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
           Forgot Password
@@ -43,8 +46,16 @@ export default function ForgotPassword() {
             margin="normal"
             required
           />
-          {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {success && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {success}
+            </Alert>
+          )}
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             type="submit"
             variant="contained"

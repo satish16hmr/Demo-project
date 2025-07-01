@@ -1,20 +1,16 @@
+Hello 
+@Harshil Bodara Sir,
+Here are the latest updates for Social-media-app as of July 1,2025:
 
+List of Completed Tasks:-
 
+    1) I have completed the integration of follow action and reducer in user.action.js and user.reducer.js.[Done]
+    2) I have completed refactored backend and Frontend.[Done]
+    3) I have resolved the user profile update issue.[Done]
+    4) I have added necessary validations and error handling for forgot/reset password.[Done]
+    5) I have completed updating the Follow Users page to reflect real-time follow state.[Done]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Thanks!
 
 
 

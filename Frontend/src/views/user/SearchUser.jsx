@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { searchUsers } from "../../store/actions/user.action";
-import { clearSearchResults } from "../../store/redusers/user.reduser";
+import { clearSearchResults } from "../../store/reducers/user.reducer";
 import Loader from "../../components/loader";
 
 export default function SearchUser() {

@@ -1,39 +1,48 @@
-import React, { useState } from "react";
-import { TextField, Button, Typography, Container, Box, Alert } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  Alert,
+} from "@mui/material";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { resetPassword } from "../../../store/actions/auth.action";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [password, setPassword] = useState("");
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
+  const { loading, error, success } = useSelector((state) => state.auth);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setSuccess("");
-    setError("");
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users/reset-password`,
-        { token, password },
-        { withCredentials: true }
-      );
-      setSuccess(res.data.message || "Password reset successful!");
-      setTimeout(() => navigate("/login"), 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong.");
-    }
-    setLoading(false);
+    dispatch(resetPassword({ token, password }));
   };
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => navigate("/login"), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, navigate]);
 
   if (!token) {
     return (
-      <Container maxWidth="xs" sx={{ minHeight: "90vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Container
+        maxWidth="xs"
+        sx={{
+          minHeight: "90vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Box sx={{ width: "100%", p: 3, boxShadow: 3, borderRadius: 2 }}>
           <Alert severity="error">Invalid or missing token.</Alert>
         </Box>
@@ -42,7 +51,15 @@ export default function ResetPassword() {
   }
 
   return (
-    <Container maxWidth="xs" sx={{ minHeight: "90vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Container
+      maxWidth="xs"
+      sx={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box sx={{ width: "100%", p: 3, boxShadow: 3, borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
           Reset Password
@@ -58,8 +75,16 @@ export default function ResetPassword() {
             margin="normal"
             required
           />
-          {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {success && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {success}
+            </Alert>
+          )}
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             type="submit"
             variant="contained"

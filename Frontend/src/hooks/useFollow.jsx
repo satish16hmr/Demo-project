@@ -6,12 +6,12 @@ import {
   unfollowUser,
   fetchFollowers,
   fetchFollowing,
-} from "../store/actions/follow.action.jsx";
+} from "../store/actions/user.action.jsx";
 
 export function useFollow() {
   const dispatch = useDispatch();
   const { users, followers, following, followingIds, loading, error } =
-    useSelector((state) => state.follow);
+    useSelector((state) => state.user);
   const { user } = useSelector((state) => state.auth);
 
   const getAllUsers = useCallback(() => dispatch(fetchAllUsers()), [dispatch]);

@@ -30,7 +30,6 @@ import MessageIcon from "@mui/icons-material/Message";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "@emotion/styled";
 
-// Custom styled components
 const GradientText = styled(Typography)({
     background: "linear-gradient(45deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%)",
     WebkitBackgroundClip: "text",
@@ -118,7 +117,6 @@ export default function Dashboard() {
             bgcolor: "#0F172A",
             color: "#E2E8F0"
         }}>
-            {/* Sidebar */}
             <motion.div
                 initial={{ x: -300 }}
                 animate={{ x: 0 }}
@@ -262,7 +260,6 @@ export default function Dashboard() {
                 </Box>
             </motion.div>
 
-            {/* Main Content */}
             <Box sx={{
                 flex: 1,
                 display: "flex",

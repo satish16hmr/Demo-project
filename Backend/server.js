@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import sequelize from './config/db.js';
 import userRoutes from './routes/user.route.js';
 import postRoutes from './routes/post.route.js';
+import authRoutes from './routes/auth.route.js';
 import './models/index.js'; 
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.set("view engine", "ejs");
 
 app.use('/users', userRoutes);
 app.use('/post', postRoutes);
+app.use('/auth',authRoutes);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running!');

@@ -21,15 +21,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   getProfile,
-  updateProfile,
-  deleteProfile,
   logout,
 } from "../../../store/actions/auth.action";
+import {   updateProfile,
+  deleteProfile, } from "../../../store/actions/user.action";
 import { getAllPosts } from "../../../store/actions/post.action";
 import {
   fetchFollowers,
   fetchFollowing,
-} from "../../../store/actions/follow.action";
+} from "../../../store/actions/user.action";
 import { motion } from "framer-motion";
 
 export default function Profile() {
@@ -37,7 +37,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
-  const { followers, following } = useSelector((state) => state.follow);
+  const { followers, following } = useSelector((state) => state.user);
 
   const [form, setForm] = useState({ name: "", lastname: "", email: "" });
   const [editMode, setEditMode] = useState(false);

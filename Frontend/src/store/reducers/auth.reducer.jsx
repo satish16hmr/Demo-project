@@ -4,9 +4,10 @@ import {
   login,
   logout,
   getProfile,
-  updateProfile,
-  deleteProfile,
+  forgotPassword,
+  resetPassword,
 } from "../actions/auth.action.jsx";
+import { updateProfile } from "../actions/user.action";
 
 const authSlice = createSlice({
   name: "auth",
@@ -30,7 +31,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Signup
       .addCase(signup.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -46,7 +46,6 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -63,7 +62,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
 
-      // Logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
@@ -74,7 +72,6 @@ const authSlice = createSlice({
         localStorage.removeItem("token");
       })
 
-      // Get Profile
       .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -91,38 +88,37 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
 
-      // Update Profile
-      .addCase(updateProfile.pending, (state) => {
+      .addCase(forgotPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = null;
       })
-      .addCase(updateProfile.fulfilled, (state, action) => {
+      .addCase(forgotPassword.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        localStorage.setItem("user", JSON.stringify(action.payload));
+        state.success = action.payload;
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(forgotPassword.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || action.error.message;
       })
 
-      // Delete Profile
-      .addCase(deleteProfile.pending, (state) => {
+      .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = null;
       })
-      .addCase(deleteProfile.fulfilled, (state) => {
+      .addCase(resetPassword.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = null;
-        state.token = null;
-        state.isAuthenticated = false;
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+        state.success = action.payload;
       })
-      .addCase(deleteProfile.rejected, (state, action) => {
+      .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || action.error.message;
       });
+
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
   },
 });
 

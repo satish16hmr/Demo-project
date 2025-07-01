@@ -15,7 +15,7 @@ import {
   fetchNotifications,
   deleteNotification,
 } from "../../store/actions/user.action";
-import { fetchFollowing, followUser } from "../../store/actions/follow.action";
+import { fetchFollowing, followUser } from "../../store/actions/user.action";
 import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
@@ -23,7 +23,7 @@ const Notifications = () => {
   const navigate = useNavigate();
 
   const { notifications, loading } = useSelector((state) => state.user);
-  const { followingIds } = useSelector((state) => state.follow);
+  const { followingIds } = useSelector((state) => state.user);
   const { user: currentUser } = useSelector((state) => state.auth);
 
   useEffect(() => {
