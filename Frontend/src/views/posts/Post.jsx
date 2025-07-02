@@ -21,6 +21,8 @@ import {
   ListItemButton,
   Paper,
 } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import {
   Add as AddIcon,
@@ -81,10 +83,13 @@ const getRandomColor = (name = "") => {
 };
 
 export default function PostFeed() {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const { posts, commentsByPostId, likesByPostId } = useSelector(
     (state) => state.post
   );
+
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const user = useSelector((state) => state.auth.user);
 
   const [view, setView] = useState("feed");
@@ -254,66 +259,91 @@ export default function PostFeed() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Card sx={{ p: 3, borderRadius: 4 }}>
-            <Typography variant="h5" fontWeight="bold" mb={2}>
-              {editPost ? "Edit Post ✏️" : "Create New Post 📝"}
-            </Typography>
-            <TextField
-              fullWidth
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="What's on your mind?"
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Box
+          <Box
+            sx={{
+              maxWidth: 600,
+              width: "100%",
+              mx: "auto",
+              mt: 2,
+              px: isSmall ? 1 : 2,
+            }}
+          >
+            <Card
               sx={{
-                border: "2px dashed #aaa",
-                p: 2,
-                textAlign: "center",
-                borderRadius: 2,
-                mb: 2,
+                p: isSmall ? 2 : 3,
+                borderRadius: 4,
+                boxShadow: 3,
               }}
             >
-              <input type="file" onChange={handleImageChange} />
-              {imagePreview && (
-                <>
-                  {imagePreview.match(/\.(mp4|webm|ogg)$/i) ? (
-                    <CardMedia
-                      component="video"
-                      src={imagePreview}
-                      controls
-                      height="200"
-                      sx={{ borderRadius: 2, mt: 2 }}
-                    />
-                  ) : (
-                    <CardMedia
-                      component="img"
-                      image={imagePreview}
-                      height="200"
-                      sx={{ borderRadius: 2, mt: 2 }}
-                    />
-                  )}
-                </>
-              )}
-            </Box>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handlePostSubmit}
-              disabled={!title && !desc && !image}
-            >
-              {editPost ? "Update Post" : "Post"}
-            </Button>
-          </Card>
+              <Typography variant="h5" fontWeight="bold" mb={2}>
+                {editPost ? "Edit Post ✏️" : "Create New Post 📝"}
+              </Typography>
+              <TextField
+                fullWidth
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="What's on your mind?"
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Box
+                sx={{
+                  border: "2px dashed #aaa",
+                  p: 2,
+                  textAlign: "center",
+                  borderRadius: 2,
+                  mb: 2,
+                }}
+              >
+                <input type="file" onChange={handleImageChange} />
+                {imagePreview && (
+                  <>
+                    {imagePreview.match(/\.(mp4|webm|ogg)$/i) ? (
+                      <CardMedia
+                        component="video"
+                        src={imagePreview}
+                        controls
+                        sx={{
+                          mt: 2,
+                          maxHeight: 300,
+                          maxWidth: "100%",
+                          borderRadius: 2,
+                        }}
+                      />
+                    ) : (
+                      <CardMedia
+                        component="img"
+                        image={imagePreview}
+                        sx={{
+                          mt: 2,
+                          maxHeight: 300,
+                          maxWidth: "100%",
+                          objectFit: "contain",
+                          borderRadius: 2,
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </Box>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handlePostSubmit}
+                disabled={!title && !desc && !image}
+              >
+                {editPost ? "Update Post" : "Post"}
+              </Button>
+            </Card>
+          </Box>
         </motion.div>
       ) : (
         posts.map((post) => (
@@ -422,11 +452,20 @@ export default function PostFeed() {
                   </IconButton>
                   <Typography>{post.commentsCount || 0}</Typography>
                 </Box>
-
                 {visibleComments[post.id] && (
                   <Paper
                     variant="outlined"
-                    sx={{ mt: 2, p: 2, borderRadius: 2, background: "#f9f9f9" }}
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      borderRadius: 2,
+                      background:
+                        theme.palette.mode === "dark" ? "#181A20" : "#f9f9f9",
+                      color:
+                        theme.palette.mode === "dark" ? "#E2E8F0" : "inherit",
+                      borderColor:
+                        theme.palette.mode === "dark" ? "#23272F" : "#e0e0e0",
+                    }}
                   >
                     {(commentsByPostId[post.id] || []).map((comment) => (
                       <Box
@@ -459,7 +498,15 @@ export default function PostFeed() {
                                 }}
                                 size="small"
                                 autoFocus
-                                sx={{ mb: 1 }}
+                                sx={{
+                                  mb: 1,
+                                  input: {
+                                    color:
+                                      theme.palette.mode === "dark"
+                                        ? "#E2E8F0"
+                                        : "inherit",
+                                  },
+                                }}
                               />
                               <Box display="flex" gap={1}>
                                 <Button
@@ -492,16 +539,42 @@ export default function PostFeed() {
                                   component="span"
                                   fontWeight="bold"
                                   display="inline"
+                                  sx={{
+                                    cursor: "pointer",
+                                    color:
+                                      theme.palette.mode === "dark"
+                                        ? "#90caf9"
+                                        : "#3f51b5",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                    },
+                                  }}
+                                  onClick={() =>
+                                    navigate(`/profile/${comment.user?.id}`)
+                                  }
                                 >
                                   {comment.user?.name}:
-                                </Typography>{" "}
-                                <Typography component="span" display="inline">
+                                </Typography>
+                                u
+                                <Typography
+                                  component="span"
+                                  display="inline"
+                                  color={
+                                    theme.palette.mode === "dark"
+                                      ? "#E2E8F0"
+                                      : "inherit"
+                                  }
+                                >
                                   {comment.text}
                                 </Typography>
                               </Typography>
                               <Typography
                                 variant="caption"
-                                color="text.secondary"
+                                color={
+                                  theme.palette.mode === "dark"
+                                    ? "#b0b8c1"
+                                    : "text.secondary"
+                                }
                                 fontSize="0.75rem"
                                 sx={{ ml: 0.5 }}
                               >
@@ -538,7 +611,13 @@ export default function PostFeed() {
                       </Box>
                     ))}
 
-                    <Divider sx={{ my: 2 }} />
+                    <Divider
+                      sx={{
+                        my: 2,
+                        borderColor:
+                          theme.palette.mode === "dark" ? "#23272F" : "#e0e0e0",
+                      }}
+                    />
                     <TextField
                       fullWidth
                       placeholder="Write a comment..."
@@ -553,6 +632,14 @@ export default function PostFeed() {
                         e.key === "Enter" && handleComment(post.id)
                       }
                       size="small"
+                      sx={{
+                        input: {
+                          color:
+                            theme.palette.mode === "dark"
+                              ? "#E2E8F0"
+                              : "inherit",
+                        },
+                      }}
                     />
                     <Button
                       variant="contained"

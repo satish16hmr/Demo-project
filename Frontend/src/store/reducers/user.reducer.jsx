@@ -84,10 +84,6 @@ const userSlice = createSlice({
         );
       })
 
-      .addCase(fetchAllUsers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
@@ -98,7 +94,9 @@ const userSlice = createSlice({
       })
 
       .addCase(followUser.fulfilled, (state, action) => {
-        state.followingIds.push(action.payload);
+        if (!state.followingIds.includes(action.payload)) {
+          state.followingIds.push(action.payload);
+        }
       })
 
       .addCase(unfollowUser.fulfilled, (state, action) => {
@@ -113,7 +111,10 @@ const userSlice = createSlice({
 
       .addCase(fetchFollowing.fulfilled, (state, action) => {
         state.following = action.payload;
-        state.followingIds = action.payload.map((f) => f.Following.id);
+        // Update followingIds to match the fetched following list
+        state.followingIds = action.payload
+          .map((f) => f.Following?.id)
+          .filter((id) => !!id);
       });
   },
 });

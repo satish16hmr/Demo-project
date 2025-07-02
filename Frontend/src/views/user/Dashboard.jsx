@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Typography,
@@ -28,7 +28,10 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import Loader from "../../components/loader.jsx";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 
 const sidebarItems = [
   { label: "Posts/Feed", path: "/dashboard/posts", icon: <ArticleIcon /> },
@@ -47,16 +50,16 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const { mode, toggleTheme } = useContext(ThemeContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const { user } = useSelector((state) => state.auth);
   const notifications = useSelector((state) => state.user?.notifications || []);
+  const isDashboardRoot = location.pathname === "/dashboard";
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -65,53 +68,74 @@ export default function Dashboard() {
     navigate("/login");
   };
 
-  const isDashboardRoot = location.pathname === "/dashboard";
-
   const sidebarContent = (
     <Box
       sx={{
         width: 250,
-        bgcolor: "#1f2937",
-        color: "#fff",
+        bgcolor: "background.paper",
+        color: "text.primary",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        py: 2,
         height: "100%",
+        py: 2,
       }}
     >
       <Box>
-        <Typography
-          variant="h5"
-          align="center"
+        <Box
           sx={{
-            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             py: 2,
-            background: "linear-gradient(to right, #6366f1, #60a5fa)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
           }}
         >
-          SocialApp
-        </Typography>
-        <Divider sx={{ borderColor: "#374151" }} />
+          <Avatar
+            src="/logo.png"
+            sx={{
+              width: 40,
+              height: 40,
+              mr: 1,
+              bgcolor: theme.palette.primary.main,
+            }}
+          />
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              background: "linear-gradient(to right, #6366f1, #60a5fa)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            SocialApp
+          </Typography>
+        </Box>
+        <Divider />
         <List>
           {sidebarItems.map((item) => (
             <ListItem key={item.label} disablePadding>
               <ListItemButton
                 component={Link}
                 to={item.path}
+                selected={location.pathname === item.path}
                 sx={{
                   px: 3,
                   py: 1.5,
+                  "&.Mui-selected": {
+                    bgcolor: "action.selected",
+                    borderLeft: "4px solid",
+                    borderColor: "primary.main",
+                  },
                   "&:hover": {
-                    bgcolor: "#374151",
-                    borderLeft: "4px solid #60a5fa",
+                    bgcolor: "action.hover",
+                    borderLeft: "4px solid",
+                    borderColor: "primary.light",
                   },
                 }}
                 onClick={() => setSidebarOpen(false)}
               >
-                <ListItemIcon sx={{ color: "#93c5fd", minWidth: 36 }}>
+                <ListItemIcon sx={{ color: "primary.main", minWidth: 36 }}>
                   {item.label === "Notifications" ? (
                     <Badge
                       badgeContent={notifications.length}
@@ -124,39 +148,88 @@ export default function Dashboard() {
                     item.icon
                   )}
                 </ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontWeight: 500 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Box>
+
       <Box sx={{ px: 2 }}>
-        <Divider sx={{ borderColor: "#374151", mb: 1 }} />
+        <Divider sx={{ mb: 2 }} />
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             gap: 1.5,
-            mb: 1.5,
+            mb: 2,
             p: 1,
-            bgcolor: "#111827",
-            borderRadius: 2,
+            borderRadius: 1,
+            bgcolor: "action.hover",
           }}
         >
-          <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.main" }}>
+          <Avatar
+            src={user?.avatar}
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: "primary.main",
+              fontSize: "1.1rem",
+            }}
+          >
             {user?.name?.[0]?.toUpperCase() || "U"}
           </Avatar>
-          <Typography>{user?.name || "User"}</Typography>
+          <Box>
+            <Typography variant="subtitle2" fontWeight={600}>
+              {user?.name || "User"}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              @{user?.email?.split("@")[0]}
+            </Typography>
+          </Box>
         </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 2,
+            p: 1,
+            borderRadius: 1,
+            bgcolor: "action.hover",
+          }}
+        >
+          <Typography variant="body2">
+            {mode === "dark" ? "Dark Mode" : "Light Mode"}
+          </Typography>
+          <IconButton onClick={toggleTheme} color="inherit" size="small">
+            {mode === "dark" ? (
+              <DarkModeIcon fontSize="small" />
+            ) : (
+              <LightModeIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Box>
+
         <Button
-          variant="outlined"
+          variant="contained"
           startIcon={<LogoutIcon />}
           onClick={handleLogout}
           color="error"
           fullWidth
-          sx={{ mt: 1 }}
+          size="small"
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            fontWeight: 500,
+            py: 1,
+          }}
         >
-          Logout
+          Sign Out
         </Button>
       </Box>
     </Box>
@@ -166,11 +239,11 @@ export default function Dashboard() {
     return (
       <Box
         sx={{
+          height: "100vh",
+          bgcolor: "background.default",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "100vh",
-          bgcolor: "#101418",
         }}
       >
         <Loader />
@@ -179,83 +252,167 @@ export default function Dashboard() {
   }
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#101418" }}>
-      <Box
-        sx={{
-          width: 250,
-          display: { xs: "none", md: "block" },
-        }}
-      >
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: "background.default",
+      }}
+    >
+      <Box sx={{ width: 250, display: { xs: "none", md: "block" } }}>
         {sidebarContent}
       </Box>
+
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         sx={{ display: { xs: "block", md: "none" } }}
-        PaperProps={{ sx: { bgcolor: "#1f2937", color: "#fff" } }}
+        PaperProps={{
+          sx: {
+            bgcolor: "background.paper",
+            color: "text.primary",
+            width: 250,
+          },
+        }}
       >
         {sidebarContent}
       </Drawer>
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          padding: "10px 0",
-        }}
-      >
+
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <AppBar
           position="static"
           elevation={0}
-          sx={{ bgcolor: "#1f2937", borderBottom: "1px solid #374151" }}
+          sx={{
+            bgcolor: "background.paper",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
         >
-          <Toolbar sx={{ justifyContent: "space-between" }}>
-            <IconButton
-              color="inherit"
-              edge="start"
-              sx={{ display: { xs: "inline-flex", md: "none" } }}
-              onClick={() => setSidebarOpen(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" color="#93c5fd">
-              Hello, {user?.name || "User"} 👋
-            </Typography>
-            <div className="text-md px-5 pointer-coarse: mr-2 text rounded-md">
+          <Toolbar
+            sx={{
+              justifyContent: "space-between",
+              px: { xs: 2, sm: 3 },
+              padding: "26px 25px",
+              display: "flex",
+              alignItems: "center",
+              borderbBottom: "1px solid",
+              borderColor: "divider",
+              borderLeft: "0.4px solid blue",
+              "@media (min-width: 600px)": {
+                padding: "26px 25px", 
+              },
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                color="inherit"
+                edge="start"
+                sx={{
+                  display: { xs: "inline-flex", md: "none" },
+                  color: "text.primary",
+                  mr: 1,
+                }}
+                onClick={() => setSidebarOpen(true)}
+              >
+                <MenuIcon />
+              </IconButton>
+
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 600,
+                  color: "text.primary",
+                  display: { xs: "none", sm: "block" },
+                  background:
+                    mode === "dark"
+                      ? "linear-gradient(to right, #60a5fa, #8b5cf6)"
+                      : "linear-gradient(to right, #6366f1, #ec4899)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Hello, {user?.name || "User"} 👋
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              <IconButton
+                onClick={toggleTheme}
+                color="inherit"
+                size="small"
+                sx={{
+                  display: { xs: "none", sm: "flex" },
+                  color: "text.primary",
+                  bgcolor: "action.hover",
+                  p: 1,
+                }}
+              >
+                {mode === "dark" ? (
+                  <DarkModeIcon fontSize="small" />
+                ) : (
+                  <LightModeIcon fontSize="small" />
+                )}
+              </IconButton>
+
+              <Avatar
+                src={user?.avatar}
+                sx={{
+                  width: 36,
+                  height: 36,
+                  bgcolor: "primary.main",
+                  fontSize: "1rem",
+                }}
+              >
+                {user?.name?.[0]?.toUpperCase() || "U"}
+              </Avatar>
+
               <Button
-                variant="contained"
-                color="secondary"
+                variant="outlined"
+                color="error"
                 size="small"
                 onClick={handleLogout}
-                sx={{ ml: 2 }}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 500,
+                  px: 2,
+                  display: { xs: "none", sm: "flex" },
+                }}
               >
                 Logout
               </Button>
-            </div>
+            </Box>
           </Toolbar>
         </AppBar>
-        <Box sx={{ flex: 1, p: 4, bgcolor: "#111827", color: "#e5e7eb" }}>
+
+        <Box sx={{ flex: 1, p: { xs: 2, sm: 3, md: 4 } }}>
           {isDashboardRoot ? (
             <Box
               sx={{
                 maxWidth: 600,
                 mx: "auto",
-                mt: 10,
-                p: 5,
-                bgcolor: "#1f2937",
+                mt: { xs: 4, sm: 6, md: 8 },
+                p: { xs: 3, sm: 4, md: 5 },
+                bgcolor: "background.paper",
                 borderRadius: 4,
                 textAlign: "center",
-                boxShadow: 4,
+                boxShadow: 1,
+                border: "1px solid",
+                borderColor: "divider",
               }}
             >
               <Avatar
+                src={user?.avatar}
                 sx={{
                   bgcolor: "primary.main",
-                  width: 72,
-                  height: 72,
+                  width: 80,
+                  height: 80,
                   mx: "auto",
-                  mb: 2,
-                  fontSize: 32,
+                  mb: 3,
+                  fontSize: "1.8rem",
+                  border: "2px solid",
+                  borderColor: "primary.light",
                 }}
               >
                 {user?.name?.charAt(0).toUpperCase() || "U"}
@@ -263,15 +420,25 @@ export default function Dashboard() {
               <Typography variant="h5" fontWeight={700} gutterBottom>
                 Welcome back, {user?.name || "User"} 👋
               </Typography>
-              <Typography variant="body1" sx={{ mb: 3 }}>
+              <Typography
+                variant="body1"
+                sx={{ mb: 3, color: "text.secondary" }}
+              >
                 Stay connected, stay inspired. Let's explore what your world is
                 sharing today!
               </Typography>
-              <img
+              <Box
+                component="img"
                 src="https://cdn-icons-png.flaticon.com/512/3448/3448440.png"
                 alt="Welcome"
-                width="200"
-                className="mx-auto"
+                sx={{
+                  width: "100%",
+                  maxWidth: 200,
+                  height: "auto",
+                  margin: "0 auto",
+                  filter:
+                    theme.palette.mode === "dark" ? "invert(0.1)" : "none",
+                }}
               />
             </Box>
           ) : (

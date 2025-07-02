@@ -10,6 +10,7 @@ import {
   useTheme,
   Paper,
   Fade,
+  useMediaQuery,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { searchUsers } from "../../store/actions/user.action";
@@ -20,6 +21,7 @@ export default function SearchUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [query, setQuery] = useState("");
   const { searchedUsers = [], loading = false } = useSelector(
     (state) => state.user || {}
@@ -55,11 +57,18 @@ export default function SearchUser() {
   }
 
   return (
-    <Box sx={{ maxWidth: 500, mx: "auto", mt: 5, px: 2 }}>
+    <Box
+      sx={{
+        maxWidth: isSmallScreen ? "100%" : 500,
+        mx: "auto",
+        mt: isSmallScreen ? 3 : 5,
+        px: isSmallScreen ? 1 : 2,
+      }}
+    >
       <Paper
         elevation={6}
         sx={{
-          p: 2,
+          p: isSmallScreen ? 2 : 3,
           borderRadius: 4,
           background:
             theme.palette.mode === "dark"
@@ -82,6 +91,7 @@ export default function SearchUser() {
             input: {
               color: theme.palette.text.primary,
               fontWeight: 500,
+              fontSize: isSmallScreen ? "0.9rem" : "1rem",
             },
             "& .MuiOutlinedInput-root": {
               borderRadius: "12px",
@@ -108,6 +118,8 @@ export default function SearchUser() {
                     borderRadius: 2,
                     transition: "0.3s",
                     mb: 1,
+                    py: isSmallScreen ? 1 : 2,
+                    px: isSmallScreen ? 1 : 2,
                     backgroundColor:
                       theme.palette.mode === "dark" ? "#1a1a1a" : "#fafafa",
                     "&:hover": {
@@ -117,14 +129,28 @@ export default function SearchUser() {
                     },
                   }}
                 >
-                  <Avatar sx={{ mr: 2 }}>
+                  <Avatar
+                    sx={{
+                      mr: 2,
+                      width: isSmallScreen ? 32 : 40,
+                      height: isSmallScreen ? 32 : 40,
+                    }}
+                  >
                     {user.name?.[0]?.toUpperCase() || "?"}
                   </Avatar>
                   <Box>
-                    <Typography fontWeight="bold" color="text.primary">
+                    <Typography
+                      fontWeight="bold"
+                      color="text.primary"
+                      fontSize={isSmallScreen ? "0.95rem" : "1rem"}
+                    >
                       {user.name} {user.lastname}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontSize={isSmallScreen ? "0.8rem" : "0.9rem"}
+                    >
                       {user.email}
                     </Typography>
                   </Box>
@@ -137,3 +163,5 @@ export default function SearchUser() {
     </Box>
   );
 }
+
+

@@ -14,17 +14,17 @@ import {
   DialogContent,
   CardMedia,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getProfile, logout } from "../../../store/actions/auth.action";
 import {
-  getProfile,
-  logout,
-} from "../../../store/actions/auth.action";
-import {   updateProfile,
-  deleteProfile, } from "../../../store/actions/user.action";
+  updateProfile,
+  deleteProfile,
+} from "../../../store/actions/user.action";
 import { getAllPosts } from "../../../store/actions/post.action";
 import {
   fetchFollowers,
@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 
 export default function Profile() {
   const dispatch = useDispatch();
+  const theme = useTheme();
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
@@ -99,12 +100,20 @@ export default function Profile() {
           mt: 6,
           p: 4,
           borderRadius: "16px",
-          boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
-          bgcolor: "rgba(255, 255, 255, 0.85)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? "0 8px 32px rgba(0,0,0,0.5)"
+              : "0 8px 32px rgba(31, 38, 135, 0.15)",
+          bgcolor: theme.palette.background.paper,
           backdropFilter: "blur(8px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
+          border:
+            theme.palette.mode === "dark"
+              ? "1px solid rgba(255,255,255,0.08)"
+              : "1px solid rgba(255,255,255,0.18)",
           background:
-            "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,245,245,0.9) 100%)",
+            theme.palette.mode === "dark"
+              ? "linear-gradient(135deg, #181A20 0%, #23272F 100%)"
+              : "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,245,245,0.9) 100%)",
         }}
       >
         <Stack
@@ -248,12 +257,12 @@ export default function Profile() {
         <Divider
           sx={{
             my: 3,
-            borderColor: "rgba(0,0,0,0.1)",
+            borderColor:
+              theme.palette.mode === "dark" ? "#23272F" : "rgba(0,0,0,0.1)",
             borderBottomWidth: "2px",
             borderStyle: "dashed",
           }}
         />
-
         {success && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -366,7 +375,6 @@ export default function Profile() {
             </Box>
           </motion.div>
         )}
-
         {posts.length > 0 && (
           <Box mt={5}>
             <Typography
@@ -375,6 +383,7 @@ export default function Profile() {
               sx={{
                 position: "relative",
                 display: "inline-block",
+                color: theme.palette.text.primary,
                 "&:after": {
                   content: '""',
                   position: "absolute",
@@ -399,13 +408,22 @@ export default function Profile() {
                   <Box
                     sx={{
                       p: 2,
-                      bgcolor: "background.paper",
+                      bgcolor: theme.palette.background.paper,
                       borderRadius: "12px",
-                      boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
-                      border: "1px solid rgba(0,0,0,0.05)",
+                      boxShadow:
+                        theme.palette.mode === "dark"
+                          ? "0 3px 10px rgba(0,0,0,0.25)"
+                          : "0 3px 10px rgba(0,0,0,0.05)",
+                      border:
+                        theme.palette.mode === "dark"
+                          ? "1px solid #23272F"
+                          : "1px solid rgba(0,0,0,0.05)",
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+                        boxShadow:
+                          theme.palette.mode === "dark"
+                            ? "0 5px 15px rgba(0,0,0,0.4)"
+                            : "0 5px 15px rgba(0,0,0,0.1)",
                         transform: "translateY(-2px)",
                       },
                     }}
@@ -483,8 +501,11 @@ export default function Profile() {
               borderRadius: 4,
               p: 0,
               overflow: "hidden",
-              bgcolor: "#f9f9f9",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+              bgcolor: theme.palette.background.paper,
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? "0 10px 30px rgba(0,0,0,0.5)"
+                  : "0 10px 30px rgba(0,0,0,0.15)",
             },
           }}
         >
@@ -494,21 +515,23 @@ export default function Profile() {
               textAlign: "center",
               px: 3,
               py: 2,
-              borderBottom: "1px solid #e0e0e0",
-              background: "linear-gradient(to right, #1976d2, #42a5f5)",
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(to right, #1976d2, #42a5f5)"
+                  : "linear-gradient(to right, #1976d2, #42a5f5)",
               color: "#fff",
             }}
           >
             Followers
           </DialogTitle>
-
           <DialogContent
             sx={{
               maxHeight: 400,
               overflowY: "auto",
               px: 3,
               py: 2,
-              bgcolor: "#fff",
+              bgcolor: theme.palette.background.paper,
             }}
           >
             {followers.length > 0 ? (
@@ -528,9 +551,11 @@ export default function Profile() {
                     sx={{
                       cursor: "pointer",
                       transition: "all 0.25s ease",
-                      backgroundColor: "#f5f5f5",
+                      backgroundColor:
+                        theme.palette.mode === "dark" ? "#23272F" : "#f5f5f5",
                       "&:hover": {
-                        backgroundColor: "#e3f2fd",
+                        backgroundColor:
+                          theme.palette.mode === "dark" ? "#1e293b" : "#e3f2fd",
                         transform: "translateX(2px)",
                       },
                     }}
@@ -570,8 +595,11 @@ export default function Profile() {
             borderRadius: 4,
             p: 0,
             overflow: "hidden",
-            bgcolor: "#f9f9f9",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+            bgcolor: theme.palette.background.paper,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? "0 10px 30px rgba(0,0,0,0.5)"
+                : "0 10px 30px rgba(0,0,0,0.15)",
           },
         }}
       >
@@ -581,21 +609,23 @@ export default function Profile() {
             textAlign: "center",
             px: 3,
             py: 2,
-            borderBottom: "1px solid #e0e0e0",
-            background: "linear-gradient(to right, #388e3c, #66bb6a)",
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            background:
+              theme.palette.mode === "dark"
+                ? "linear-gradient(to right, #388e3c, #66bb6a)"
+                : "linear-gradient(to right, #388e3c, #66bb6a)",
             color: "#fff",
           }}
         >
           Following
         </DialogTitle>
-
         <DialogContent
           sx={{
             maxHeight: 400,
             overflowY: "auto",
             px: 3,
             py: 2,
-            bgcolor: "#fff",
+            bgcolor: theme.palette.background.paper,
           }}
         >
           {following.length > 0 ? (
@@ -615,9 +645,11 @@ export default function Profile() {
                   sx={{
                     cursor: "pointer",
                     transition: "all 0.25s ease",
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor:
+                      theme.palette.mode === "dark" ? "#23272F" : "#f5f5f5",
                     "&:hover": {
-                      backgroundColor: "#e8f5e9",
+                      backgroundColor:
+                        theme.palette.mode === "dark" ? "#1e293b" : "#e8f5e9",
                       transform: "translateX(2px)",
                     },
                   }}

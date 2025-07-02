@@ -1,0 +1,37 @@
+Hello 
+@Harshil Bodara Sir,
+Here are the latest updates for Social-media-app as of July 2,2025:
+
+List of Completed Tasks:-
+
+    1) I have fixed the user search functionality to only match users whose name or lastname starts with the typed query.[Done]
+    2) I have Implemented Dark Mode/Light Mode toggle feature in the dashboard.[Done]
+    3) I have Resolved all existing issues related to creating and updating posts.[Done]
+    4) I have fixed issues in userProfile for follwing and follwers fetching.[Done]
+    5) I have Completed my frontend project.[Done]
+    
+Thanks!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

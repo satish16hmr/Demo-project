@@ -24,6 +24,7 @@ import {
   Tooltip,
   ListItemAvatar,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   Favorite as FavoriteIcon,
   FavoriteBorder as FavoriteBorderIcon,
@@ -58,6 +59,7 @@ import { api } from "../../libs/axios";
 export default function UserProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const theme = useTheme();
   const dispatch = useDispatch();
 
   const [profile, setProfile] = useState(null);
@@ -369,10 +371,15 @@ export default function UserProfile() {
                     <Paper
                       variant="outlined"
                       sx={{
-                        mt: 3,
+                        mt: 2,
                         p: 2,
-                        borderRadius: 3,
-                        background: "#f9f9f9",
+                        borderRadius: 2,
+                        background:
+                          theme.palette.mode === "dark" ? "#181A20" : "#f9f9f9",
+                        color:
+                          theme.palette.mode === "dark" ? "#E2E8F0" : "inherit",
+                        borderColor:
+                          theme.palette.mode === "dark" ? "#23272F" : "#e0e0e0",
                       }}
                     >
                       {(commentsByPostId[post.id] || []).map((comment) => (
@@ -407,7 +414,15 @@ export default function UserProfile() {
                                   }}
                                   size="small"
                                   autoFocus
-                                  sx={{ mb: 1 }}
+                                  sx={{
+                                    mb: 1,
+                                    input: {
+                                      color:
+                                        theme.palette.mode === "dark"
+                                          ? "#E2E8F0"
+                                          : "inherit",
+                                    },
+                                  }}
                                 />
                                 <Box display="flex" gap={1}>
                                   <Button
@@ -435,18 +450,47 @@ export default function UserProfile() {
                                 </Box>
                               </>
                             ) : (
-                              <Typography>
-                                <Typography
-                                  component="span"
-                                  fontWeight="bold"
-                                  display="inline"
-                                >
-                                  {comment.user?.name}:
-                                </Typography>{" "}
-                                <Typography component="span" display="inline">
-                                  {comment.text}
+                              <Box>
+                                <Typography fontSize="0.95rem">
+                                  <Typography
+                                    component="span"
+                                    fontWeight="bold"
+                                    display="inline"
+                                    color={
+                                      theme.palette.mode === "dark"
+                                        ? "#90caf9"
+                                        : "inherit"
+                                    }
+                                  >
+                                    {comment.user?.name}:
+                                  </Typography>{" "}
+                                  <Typography
+                                    component="span"
+                                    display="inline"
+                                    color={
+                                      theme.palette.mode === "dark"
+                                        ? "#E2E8F0"
+                                        : "inherit"
+                                    }
+                                  >
+                                    {comment.text}
+                                  </Typography>
                                 </Typography>
-                              </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color={
+                                    theme.palette.mode === "dark"
+                                      ? "#b0b8c1"
+                                      : "text.secondary"
+                                  }
+                                  fontSize="0.75rem"
+                                  sx={{ ml: 0.5 }}
+                                >
+                                  {moment(
+                                    comment.createdAt || comment.created_at
+                                  ).fromNow()}
+                                </Typography>
+                              </Box>
                             )}
                           </Box>
                           {comment.userId === currentUser?.id && (
@@ -475,7 +519,15 @@ export default function UserProfile() {
                         </Box>
                       ))}
 
-                      <Divider sx={{ my: 2 }} />
+                      <Divider
+                        sx={{
+                          my: 2,
+                          borderColor:
+                            theme.palette.mode === "dark"
+                              ? "#23272F"
+                              : "#e0e0e0",
+                        }}
+                      />
                       <TextField
                         fullWidth
                         placeholder="Write a comment..."
@@ -483,13 +535,21 @@ export default function UserProfile() {
                         onChange={(e) =>
                           setCommentTextMap((prev) => ({
                             ...prev,
-                            [postId]: e.target.value,
+                            [post.id]: e.target.value,
                           }))
                         }
                         onKeyDown={(e) =>
                           e.key === "Enter" && handleComment(post.id)
                         }
                         size="small"
+                        sx={{
+                          input: {
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "#E2E8F0"
+                                : "inherit",
+                          },
+                        }}
                       />
                       <Button
                         variant="contained"
@@ -543,7 +603,6 @@ export default function UserProfile() {
         </DialogContent>
       </Dialog>
 
-      {/* Followers/Following Dialog */}
       <Dialog
         open={openModal}
         onClose={() => setOpenModal(false)}
@@ -555,7 +614,10 @@ export default function UserProfile() {
         </DialogTitle>
         <DialogContent>
           <List>
-            {(modalType === "followers" ? followers : following).map((item) => {
+            {(modalType === "followers"
+              ? followers.filter((item) => item.Follower && item.Follower.id)
+              : following.filter((item) => item.Following && item.Following.id)
+            ).map((item) => {
               const user =
                 modalType === "followers" ? item.Follower : item.Following;
               const isUserFollowing = followingIds.includes(user.id);

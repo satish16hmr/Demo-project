@@ -18,9 +18,9 @@ async function createUser(data) {
 async function searchUsers(query) {
   const searchCondition = {
     [Op.or]: [
-      { name: { [Op.iLike]: `%${query}%` } },
-      { lastname: { [Op.iLike]: `%${query}%` } },
-      { email: { [Op.iLike]: `%${query}%` } },
+      { name: { [Op.iLike]: `${query}%` } },
+      { lastname: { [Op.iLike]: `${query}%` } },
+      // { email: { [Op.iLike]: `%${query}%` } },
     ],
   };
 

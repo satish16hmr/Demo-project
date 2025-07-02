@@ -171,7 +171,7 @@ async function getUserLoginFeed(req, res) {
 
 // Like or unlike a post
 
-export async function toggleLikePost(req, res) {
+async function toggleLikePost(req, res) {
   const userId = req.user.id;
   const postId = req.params.id;
 
